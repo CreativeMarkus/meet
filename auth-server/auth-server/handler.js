@@ -1,33 +1,26 @@
+/* eslint-env node */
 'use strict';
 
-
-const { google } = require("googleapis");
-const calendar = google.calendar("v3");
-const SCOPES = ["https://www.googleapis.com/auth/calendar.events.public.readonly"];
-const { CLIENT_SECRET, CLIENT_ID, CALENDAR_ID } = process.env;
-const redirect_uris = [
-    "https://meet-two-cyan.vercel.app"
-];
-
-
-const oAuth2Client = new google.auth.OAuth2(
-    CLIENT_ID,
-    CLIENT_SECRET,
-    redirect_uris[0]
-);
-
+const { google } = require('googleapis');
+const SCOPES = ['https://www.googleapis.com/auth/calendar.events.readonly'];
 
 module.exports.getAuthURL = async () => {
-    /**
-     *
-     * Scopes array is passed to the `scope` option.
-     *
-     */
+    const { CLIENT_SECRET, CLIENT_ID } = process.env;
+    const redirect_uri = 'https://meet-two-cyan.vercel.app';
+
+    if (!CLIENT_ID || !CLIENT_SECRET) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: 'Server configuration error: missing CLIENT_ID or CLIENT_SECRET' }),
+        };
+    }
+
+    const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, redirect_uri);
+
     const authUrl = oAuth2Client.generateAuthUrl({
-        access_type: "offline",
+        access_type: 'offline',
         scope: SCOPES,
     });
-
 
     return {
         statusCode: 200,
@@ -35,8 +28,6 @@ module.exports.getAuthURL = async () => {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Credentials': true,
         },
-        body: JSON.stringify({
-            authUrl,
-        }),
+        body: JSON.stringify({ authUrl }),
     };
 };
