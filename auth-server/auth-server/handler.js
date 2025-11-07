@@ -96,7 +96,6 @@ module.exports.getCalendarEvents = async (event) => {
         };
     }
 
-    // Extract access_token from path parameters
     const access_token = event && event.pathParameters && event.pathParameters.access_token
         ? decodeURIComponent(`${event.pathParameters.access_token}`)
         : null;
@@ -109,14 +108,11 @@ module.exports.getCalendarEvents = async (event) => {
     }
 
     const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, redirect_uri);
-    // Set only the access_token here; if you have a refresh_token you may set that too
     oAuth2Client.setCredentials({ access_token });
 
-    // Return a promise which will resolve/reject based on the calendar API callback
     return new Promise((resolve, reject) => {
         const calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
 
-        // Example: list upcoming events (you can change params as needed)
         calendar.events.list(
             {
                 calendarId: CALENDAR_ID,
