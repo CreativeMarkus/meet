@@ -58,6 +58,31 @@ input.city {
   box-sizing: border-box;
 }
 
+/* room for the dropdown icon */
+input.city { padding-right: 2.5rem; }
+
+.city-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #333;
+}
+
+.city-toggle:focus { outline: 2px solid #90e0df; border-radius: 4px; }
+
+.city-toggle svg { display: block; }
+
+.city-toggle[aria-expanded="true"] svg { transform: rotate(180deg); transition: transform 180ms ease; }
+.city-toggle[aria-expanded="false"] svg { transition: transform 180ms ease; }
+
 .suggestions {
   position: absolute;
   top: calc(100% + 8px);
