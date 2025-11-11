@@ -1,10 +1,15 @@
-import React, { useState } from 'react'; // eslint-disable-line no-unused-vars
+import React, { useState, useEffect } from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 
-const CitySearch = ({ allLocations = [] }) => {
+const CitySearch = ({ allLocations, setCurrentCity }) => {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
+
+    // initialize suggestions from prop when it becomes available
+    useEffect(() => {
+        setSuggestions(allLocations);
+    }, [allLocations]);
 
     const handleInputChanged = (event) => {
         const value = event.target.value;
@@ -22,6 +27,7 @@ const CitySearch = ({ allLocations = [] }) => {
         const value = event.target.textContent;
         setQuery(value);
         setShowSuggestions(false);
+        setCurrentCity(value);
     };
 
     return (
@@ -32,7 +38,11 @@ const CitySearch = ({ allLocations = [] }) => {
                 placeholder="Search for a city"
                 role="textbox"
                 value={query}
-                onFocus={() => setShowSuggestions(true)}
+                onFocus={() => {
+                    setShowSuggestions(true);
+                    // populate suggestions with allLocations when textbox gains focus
+                    setSuggestions(allLocations || []);
+                }}
                 onChange={handleInputChanged}
             />
             {showSuggestions ? (
@@ -57,4 +67,5 @@ export default CitySearch;
 
 CitySearch.propTypes = {
     allLocations: PropTypes.arrayOf(PropTypes.string),
+    setCurrentCity: PropTypes.func,
 };
