@@ -1,14 +1,17 @@
 import React, { useState } from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 
-const NumberOfEvents = ({ defaultNumber = 32 }) => {
+const NumberOfEvents = ({ setCurrentNOE, defaultNumber = 32 }) => {
     const [number, setNumber] = useState(defaultNumber);
 
     const handleInputChanged = (e) => {
         const val = e.target.value;
-        // store as number when possible
+        // keep empty string while the user is editing so backspace works
         const num = val === '' ? '' : Number(val);
         setNumber(num);
+        if (setCurrentNOE && val !== '') {
+            setCurrentNOE(Number(val));
+        }
     };
 
     return (
@@ -27,6 +30,7 @@ const NumberOfEvents = ({ defaultNumber = 32 }) => {
 
 NumberOfEvents.propTypes = {
     defaultNumber: PropTypes.number,
+    setCurrentNOE: PropTypes.func,
 };
 
 export default NumberOfEvents;

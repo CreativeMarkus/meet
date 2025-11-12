@@ -10,8 +10,7 @@ import './App.css';
 
 const App = () => {
   const [events, setEvents] = useState([]);
-  // keep setter for future wiring with NumberOfEvents
-  // eslint-disable-next-line no-unused-vars
+
   const [currentNOE, setCurrentNOE] = useState(32);
   const [allLocations, setAllLocations] = useState([]);
   const [currentCity, setCurrentCity] = useState('See all cities');
@@ -32,7 +31,7 @@ const App = () => {
   return (
     <div className="App">
       <CitySearch allLocations={allLocations} setCurrentCity={setCurrentCity} />
-      <NumberOfEvents />
+      <NumberOfEvents setCurrentNOE={setCurrentNOE} />
       <EventList events={events} />
     </div>
   );

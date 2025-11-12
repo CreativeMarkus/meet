@@ -52,4 +52,24 @@ describe('<App /> integration', () => {
             expect(event.textContent).toContain("Berlin, Germany");
         });
     });
+
+    test('renders number of events matching the number inputted by the user', async () => {
+        const user = userEvent.setup();
+        const AppComponent = render(<App />);
+        const AppDOM = AppComponent.container.firstChild;
+
+        const NumberOfEventsDOM = AppDOM.querySelector('#number-of-events');
+        const NumberOfEventsInput = within(NumberOfEventsDOM).queryByRole('textbox');
+
+        // Delete "32" and type "10"
+        await user.type(NumberOfEventsInput, '{backspace}{backspace}10');
+
+        // Wait for events to update
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        const EventListDOM = AppDOM.querySelector('#event-list');
+        const allRenderedEventItems = within(EventListDOM).queryAllByRole('listitem');
+
+        expect(allRenderedEventItems.length).toBe(10);
+    });
 });
