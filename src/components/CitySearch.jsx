@@ -6,7 +6,6 @@ const CitySearch = ({ allLocations, setCurrentCity }) => {
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
 
-    // initialize suggestions from prop when it becomes available
     useEffect(() => {
         setSuggestions(allLocations);
     }, [allLocations]);
@@ -40,7 +39,6 @@ const CitySearch = ({ allLocations, setCurrentCity }) => {
                 value={query}
                 onFocus={() => {
                     setShowSuggestions(true);
-                    // populate suggestions with allLocations when textbox gains focus
                     setSuggestions(allLocations || []);
                 }}
                 onChange={handleInputChanged}

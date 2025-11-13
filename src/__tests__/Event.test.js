@@ -25,24 +25,18 @@ describe('<Event /> component', () => {
         const user = userEvent.setup();
         const { container, getByText } = render(<Event event={event} />);
 
-        // details should be hidden initially
         expect(container.querySelector('.details')).not.toBeInTheDocument();
 
-        // click show details
         const detailsButton = getByText(/show details/i);
         await user.click(detailsButton);
 
-        // details should be visible
         expect(container.querySelector('.details')).toBeInTheDocument();
         if (event.description) {
-            // ensure the description element is rendered (text may contain newlines)
             expect(container.querySelector('.description')).toBeInTheDocument();
         }
 
-        // button text should now be 'Hide details'
         expect(getByText(/hide details/i)).toBeInTheDocument();
 
-        // click hide details
         await user.click(getByText(/hide details/i));
         expect(container.querySelector('.details')).not.toBeInTheDocument();
     });

@@ -16,8 +16,12 @@ const App = () => {
   const [currentCity, setCurrentCity] = useState('See all cities');
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchData = async () => {
       const allEvents = await getEvents();
+      if (!isMounted) return; // avoid setting state on unmounted component
+
       const filteredEvents = currentCity === 'See all cities'
         ? allEvents
         : allEvents.filter((event) => event.location === currentCity);
@@ -26,6 +30,8 @@ const App = () => {
     };
 
     fetchData();
+
+    return () => { isMounted = false; };
   }, [currentCity, currentNOE]);
 
   return (

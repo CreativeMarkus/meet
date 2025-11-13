@@ -6,7 +6,6 @@ const NumberOfEvents = ({ setCurrentNOE, defaultNumber = 32 }) => {
 
     const handleInputChanged = (e) => {
         const val = e.target.value;
-        // keep empty string while the user is editing so backspace works
         const num = val === '' ? '' : Number(val);
         setNumber(num);
         if (setCurrentNOE && val !== '') {

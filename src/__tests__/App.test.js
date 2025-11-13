@@ -1,24 +1,26 @@
 /* eslint-env jest */
 // src/__tests__/App.test.js
 import React from 'react'; // eslint-disable-line no-unused-vars
-import { render, within } from '@testing-library/react';
+import { render, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getEvents } from '../api';
 import App from './../App';
 
 describe('<App /> component', () => {
-    test('renders without crashing', () => {
-        render(<App />);
+    test('renders without crashing', async () => {
+        const { container } = render(<App />);
+        // wait for initial async effects in App to complete
+        await waitFor(() => expect(container.querySelector('#event-list')).toBeInTheDocument());
     });
 
-    test('renders list of events', () => {
-        const AppDOM = render(<App />).container.firstChild;
-        expect(AppDOM.querySelector('#event-list')).toBeInTheDocument();
+    test('renders list of events', async () => {
+        const { container } = render(<App />);
+        await waitFor(() => expect(container.querySelector('#event-list')).toBeInTheDocument());
     });
 
-    test('renders NumberOfEvents component', () => {
-        const AppDOM = render(<App />).container.firstChild;
-        expect(AppDOM.querySelector('#number-of-events')).toBeInTheDocument();
+    test('renders NumberOfEvents component', async () => {
+        const { container } = render(<App />);
+        await waitFor(() => expect(container.querySelector('#number-of-events')).toBeInTheDocument());
     });
 });
 
@@ -34,7 +36,7 @@ describe('<App /> integration', () => {
         const CitySearchInput = within(CitySearchDOM).queryByRole('textbox');
 
 
-        await user.type(CitySearchInput, "Berlin");
+        await user.type(CitySearchInput, 'Berlin');
         const berlinSuggestionItem = await within(CitySearchDOM).findByText('Berlin, Germany');
         await user.click(berlinSuggestionItem);
 
@@ -64,12 +66,19 @@ describe('<App /> integration', () => {
         // Delete "32" and type "10"
         await user.type(NumberOfEventsInput, '{backspace}{backspace}10');
 
-        // Wait for events to update
-        await new Promise(resolve => setTimeout(resolve, 100));
-
+        // Wait for the UI to update and then query for the rendered event items.
         const EventListDOM = AppDOM.querySelector('#event-list');
-        const allRenderedEventItems = within(EventListDOM).queryAllByRole('listitem');
+        const allRenderedEventItems = await within(EventListDOM).findAllByRole('listitem');
 
         expect(allRenderedEventItems.length).toBe(10);
     });
+});
+
+// Ensure any fake timers are cleared and real timers restored so Jest can exit cleanly.
+afterEach(() => {
+    try {
+        jest.clearAllTimers();
+    } finally {
+        jest.useRealTimers();
+    }
 });

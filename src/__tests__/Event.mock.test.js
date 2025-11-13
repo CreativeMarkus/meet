@@ -25,15 +25,12 @@ describe('<Event /> component (mocked data)', () => {
         const user = userEvent.setup();
         const { container, getByText } = render(<Event event={mockEvent} />);
 
-        // details hidden initially
         expect(container.querySelector('.details')).not.toBeInTheDocument();
 
-        // show details
         await user.click(getByText(/show details/i));
         expect(container.querySelector('.details')).toBeInTheDocument();
         expect(container.querySelector('.description')).toBeInTheDocument();
 
-        // hide details
         await user.click(getByText(/hide details/i));
         expect(container.querySelector('.details')).not.toBeInTheDocument();
     });

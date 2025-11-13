@@ -42,12 +42,10 @@ describe('<CitySearch /> component', () => {
         CitySearchComponent.rerender(<CitySearch allLocations={allLocations} setCurrentCity={() => { }} />);
 
 
-        // user types "Berlin" in city textbox
         const cityTextBox = CitySearchComponent.queryByRole('textbox');
         await user.type(cityTextBox, "Berlin");
 
 
-        // filter allLocations to locations matching "Berlin"
         const suggestions = allLocations
             ? allLocations.filter((location) => {
                 return (
@@ -57,7 +55,6 @@ describe('<CitySearch /> component', () => {
             : [];
 
 
-        // get all <li> elements inside the suggestion list
         const suggestionListItems = CitySearchComponent.queryAllByRole('listitem');
         expect(suggestionListItems).toHaveLength(suggestions.length + 1);
         for (let i = 0; i < suggestions.length; i += 1) {

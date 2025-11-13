@@ -97,20 +97,18 @@ export const getAccessToken = async () => {
             'https://j251282ei3.execute-api.eu-central-1.amazonaws.com/dev';
 
         if (!code) {
-            // Get Google Auth URL and redirect the user
             try {
                 const response = await fetch(`${serverlessBaseUrl}/api/get-auth-url`);
                 const result = await response.json();
                 const { authUrl } = result;
                 window.location.href = authUrl;
-                return null; // stop execution until redirect
+                return null;
             } catch (error) {
                 console.error('Error getting auth URL:', error);
                 return null;
             }
         }
 
-        // Exchange authorization code for access token
         return await getToken(code);
     }
 
