@@ -1,9 +1,20 @@
 /* eslint-env jest */
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { loadFeature, defineFeature } from 'jest-cucumber';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
+import mockData from '../mock-data';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
+
+// Mock api calls so tests don't perform network requests
+jest.mock('../api', () => {
+    const actualApi = jest.requireActual('../api');
+    return {
+        getEvents: jest.fn(() => Promise.resolve(mockData)),
+        extractLocations: actualApi.extractLocations,
+        // include other exports if needed
+    };
+});
 
 const feature = loadFeature('./src/features/showHideAnEventsDetails.feature');
 
@@ -12,7 +23,7 @@ defineFeature(feature, test => {
         let AppComponent;
         let AppDOM;
 
-        given('the user has opened the app', () => {
+        given('the user has opened the app', async () => {
             AppComponent = render(<App />);
             AppDOM = AppComponent.container.firstChild;
         });
@@ -23,9 +34,14 @@ defineFeature(feature, test => {
             });
         });
 
-        then('the details for each event should be hidden by default', () => {
-            const details = AppDOM.querySelectorAll('#event-list .event .details');
-            expect(details.length).toBe(0);
+        then('the details for each event should be hidden by default', async () => {
+            // wait for the events to render and assert the first event's button shows 'Show details'
+            await waitFor(() => {
+                const firstEvent = AppDOM.querySelector('#event-list .event');
+                expect(firstEvent).toBeDefined();
+                const button = within(firstEvent).getByRole('button');
+                expect(button.textContent.toLowerCase()).toContain('show details');
+            });
         });
     });
 
@@ -33,7 +49,7 @@ defineFeature(feature, test => {
         let AppComponent;
         let AppDOM;
 
-        given('the user has opened the app', () => {
+        given('the user has opened the app', async () => {
             AppComponent = render(<App />);
             AppDOM = AppComponent.container.firstChild;
         });
@@ -46,13 +62,22 @@ defineFeature(feature, test => {
 
         when('the user expands an event', async () => {
             const user = userEvent.setup();
-            const button = AppDOM.querySelector('#event-list .event .details-btn');
+            // target the first event's details button to avoid ambiguity
+            const firstEvent = AppDOM.querySelector('#event-list .event');
+            await waitFor(() => expect(firstEvent).toBeDefined());
+            const button = within(firstEvent).getByRole('button');
             await user.click(button);
         });
 
-        then("the event's details should be shown", () => {
-            const details = AppDOM.querySelector('#event-list .event .details');
-            expect(details).toBeDefined();
+        then("the event's details should be shown", async () => {
+            await waitFor(() => {
+                const firstEvent = AppDOM.querySelector('#event-list .event');
+                const button = within(firstEvent).getByRole('button');
+                expect(button.textContent.toLowerCase()).toContain('hide details');
+                const details = firstEvent.querySelector('.details');
+                expect(details).toBeDefined();
+                expect(details).toBeVisible();
+            });
         });
     });
 
@@ -74,12 +99,17 @@ defineFeature(feature, test => {
 
         when('the user collapses the event', async () => {
             const user = userEvent.setup();
-            const button = AppDOM.querySelector('#event-list .event .details-btn');
+            const firstEvent = AppDOM.querySelector('#event-list .event');
+            await waitFor(() => expect(firstEvent).toBeDefined());
+            const button = within(firstEvent).getByRole('button');
             await user.click(button);
         });
         then("the event's details should be hidden", async () => {
             await waitFor(() => {
-                const details = AppDOM.querySelector('#event-list .event .details');
+                const firstEvent = AppDOM.querySelector('#event-list .event');
+                const button = within(firstEvent).getByRole('button');
+                expect(button.textContent.toLowerCase()).toContain('show details');
+                const details = firstEvent.querySelector('.details');
                 expect(details).toBeNull();
             });
         });

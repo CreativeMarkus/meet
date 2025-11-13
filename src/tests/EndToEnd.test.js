@@ -4,6 +4,12 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+// Environment-driven puppeteer options:
+// - PUPPETEER_HEADLESS: 'true' to force headless mode; otherwise false by default for local debugging
+// - PUPPETEER_SLOWMO: optional number (ms) to slow down operations; defaults to 0 in headless or 250 when visible
+const headlessMode = process.env.PUPPETEER_HEADLESS === 'true' || !!process.env.CI;
+const slowMo = process.env.PUPPETEER_SLOWMO ? Number(process.env.PUPPETEER_SLOWMO) : (headlessMode ? 0 : 250);
+
 describe('show/hide event details', () => {
     let browser;
     let page;
@@ -15,8 +21,8 @@ describe('show/hide event details', () => {
         profileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer_profile_'));
         try {
             browser = await puppeteer.launch({
-                headless: false,
-                slowMo: 250,
+                headless: headlessMode,
+                slowMo,
                 timeout: 0,
                 userDataDir: profileDir,
                 args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -29,8 +35,8 @@ describe('show/hide event details', () => {
             console.warn('puppeteer.launch with userDataDir failed, falling back to default launch:', err.message);
             /* eslint-enable no-console */
             browser = await puppeteer.launch({
-                headless: false,
-                slowMo: 250,
+                headless: headlessMode,
+                slowMo,
                 timeout: 0,
                 args: ['--no-sandbox', '--disable-setuid-sandbox'],
             });
@@ -111,8 +117,8 @@ describe('Filter Events by City', () => {
         profileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer_profile_'));
         try {
             browser = await puppeteer.launch({
-                headless: false,
-                slowMo: 250,
+                headless: headlessMode,
+                slowMo,
                 timeout: 0,
                 userDataDir: profileDir,
                 args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -120,8 +126,8 @@ describe('Filter Events by City', () => {
         } catch (err) {
             console.warn('puppeteer.launch with userDataDir failed, falling back to default launch:', err.message);
             browser = await puppeteer.launch({
-                headless: false,
-                slowMo: 250,
+                headless: headlessMode,
+                slowMo,
                 timeout: 0,
                 args: ['--no-sandbox', '--disable-setuid-sandbox'],
             });

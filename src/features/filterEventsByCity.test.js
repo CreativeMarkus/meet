@@ -5,6 +5,16 @@ import { render, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
 import { getEvents } from '../api';
+import mockData from '../mock-data';
+
+// Mock api so tests use mockData instead of attempting network requests
+jest.mock('../api', () => {
+    const actualApi = jest.requireActual('../api');
+    return {
+        getEvents: jest.fn(() => Promise.resolve(mockData)),
+        extractLocations: actualApi.extractLocations,
+    };
+});
 
 const feature = loadFeature('./src/features/filterEventsByCity.feature');
 
@@ -47,7 +57,8 @@ defineFeature(feature, test => {
         });
 
         then("the user should receive a list of cities (suggestions) that match what they've typed", async () => {
-            const suggestionListItems = within(CitySearchDOM).queryAllByRole('listitem');
+            // wait for the suggestion items to appear (App updates locations asynchronously)
+            const suggestionListItems = await within(CitySearchDOM).findAllByRole('listitem');
             expect(suggestionListItems.length).toBe(2);
         });
     });

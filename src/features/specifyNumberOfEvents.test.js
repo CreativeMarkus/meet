@@ -4,6 +4,16 @@ import React from 'react'; // eslint-disable-line no-unused-vars
 import { render, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
+import mockData from '../mock-data';
+
+// Mock api so getEvents uses local mockData during feature tests
+jest.mock('../api', () => {
+    const actualApi = jest.requireActual('../api');
+    return {
+        getEvents: jest.fn(() => Promise.resolve(mockData)),
+        extractLocations: actualApi.extractLocations,
+    };
+});
 
 const feature = loadFeature('./src/features/specifyNumberOfEvents.feature');
 
@@ -35,9 +45,13 @@ defineFeature(feature, test => {
         let AppDOM;
         let numberInput;
 
-        given('the user is viewing the list of events', () => {
+        given('the user is viewing the list of events', async () => {
             AppComponent = render(<App />);
             AppDOM = AppComponent.container.firstChild;
+            // wait for App's async effect to populate the number-of-events container
+            await waitFor(() => {
+                expect(AppDOM.querySelector('#number-of-events')).toBeInTheDocument();
+            });
             const numberContainer = AppDOM.querySelector('#number-of-events');
             numberInput = within(numberContainer).queryByRole('textbox');
         });

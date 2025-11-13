@@ -1,11 +1,21 @@
 /* eslint-env jest */
-// src/__tests__/CitySearch.test.js
-import React from 'react'; // eslint-disable-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
+import React from 'react';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CitySearch from '../components/CitySearch';
 import App from '../App';
 import { extractLocations, getEvents } from '../api';
+import mockData from '../mock-data';
+
+// Mock api so getEvents returns local mock data during tests
+jest.mock('../api', () => {
+    const actualApi = jest.requireActual('../api');
+    return {
+        getEvents: jest.fn(() => Promise.resolve(mockData)),
+        extractLocations: actualApi.extractLocations,
+    };
+});
 
 describe('<CitySearch /> component', () => {
     let CitySearchComponent;
@@ -80,7 +90,7 @@ describe('<CitySearch /> integration', () => {
         const allLocations = extractLocations(allEvents);
 
 
-        const suggestionListItems = within(CitySearchDOM).queryAllByRole('listitem');
+        const suggestionListItems = await within(CitySearchDOM).findAllByRole('listitem');
         expect(suggestionListItems.length).toBe(allLocations.length + 1);
     });
 
