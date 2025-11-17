@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // src/__tests__/Event.test.js
 import React from 'react'; // eslint-disable-line no-unused-vars
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Event from '../components/Event';
 import { getEvents } from '../api';
@@ -11,11 +11,12 @@ describe('<Event /> component', () => {
         const allEvents = await getEvents();
         const event = allEvents[0];
 
-        const { queryByText } = render(<Event event={event} />);
+        render(<Event event={event} />);
 
-        expect(queryByText(event.summary)).toBeInTheDocument();
-        expect(queryByText(event.created)).toBeInTheDocument();
-        expect(queryByText(event.location)).toBeInTheDocument();
+        // wait for the component text nodes to appear (wraps updates in act)
+        expect(await screen.findByText(event.summary)).toBeInTheDocument();
+        expect(await screen.findByText(event.created)).toBeInTheDocument();
+        expect(await screen.findByText(event.location)).toBeInTheDocument();
     });
 
     test('show/hide details when button is clicked', async () => {
@@ -23,21 +24,23 @@ describe('<Event /> component', () => {
         const event = allEvents[0];
 
         const user = userEvent.setup();
-        const { container, getByText } = render(<Event event={event} />);
+        const { container } = render(<Event event={event} />);
 
         expect(container.querySelector('.details')).not.toBeInTheDocument();
 
-        const detailsButton = getByText(/show details/i);
+        const detailsButton = await screen.findByText(/show details/i);
         await user.click(detailsButton);
 
+        // wait for details to appear
         expect(container.querySelector('.details')).toBeInTheDocument();
         if (event.description) {
             expect(container.querySelector('.description')).toBeInTheDocument();
         }
 
-        expect(getByText(/hide details/i)).toBeInTheDocument();
+        expect(await screen.findByText(/hide details/i)).toBeInTheDocument();
 
-        await user.click(getByText(/hide details/i));
+        await user.click(await screen.findByText(/hide details/i));
+        // details should be removed
         expect(container.querySelector('.details')).not.toBeInTheDocument();
     });
 });

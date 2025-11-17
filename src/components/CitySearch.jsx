@@ -36,6 +36,7 @@ const CitySearch = ({ allLocations, setCurrentCity }) => {
                 className="city"
                 placeholder="Search for a city"
                 role="textbox"
+                aria-label="City"
                 value={query}
                 onFocus={() => {
                     setShowSuggestions(true);

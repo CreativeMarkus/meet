@@ -26,9 +26,15 @@ defineFeature(feature, test => {
             // nothing to do here - default applies
         });
 
-        when('the user opens the app', () => {
+        when('the user opens the app', async () => {
             AppComponent = render(<App />);
             AppDOM = AppComponent.container.firstChild;
+            // Wait for async fetchData to complete
+            await waitFor(() => {
+                const EventListDOM = AppDOM.querySelector('#event-list');
+                const items = within(EventListDOM).queryAllByRole('listitem');
+                expect(items.length).toBeGreaterThan(0);
+            });
         });
 
         then('32 events are displayed', async () => {

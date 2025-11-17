@@ -1,48 +1,32 @@
 /* eslint-env jest,node */
 import puppeteer from 'puppeteer';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
 
 // Environment-driven puppeteer options:
-// - PUPPETEER_HEADLESS: 'true' to force headless mode; otherwise false by default for local debugging
+// - PUPPETEER_HEADLESS: set to 'false' to force visible browser; otherwise tests default to headless to
+//   avoid conflicts with existing local browser processes (safer for CI and local runs).
 // - PUPPETEER_SLOWMO: optional number (ms) to slow down operations; defaults to 0 in headless or 250 when visible
-const headlessMode = process.env.PUPPETEER_HEADLESS === 'true' || !!process.env.CI;
-const slowMo = process.env.PUPPETEER_SLOWMO ? Number(process.env.PUPPETEER_SLOWMO) : (headlessMode ? 0 : 250);
+// Default to headless unless explicitly set to 'false'. This reduces "browser already running" conflicts.
+const headlessMode = process.env.PUPPETEER_HEADLESS === 'false' ? false : 'new'; // Use 'new' headless mode
+const slowMo = process.env.PUPPETEER_SLOWMO ? Number(process.env.PUPPETEER_SLOWMO) : (headlessMode === false ? 250 : 0);
 
 describe('show/hide event details', () => {
     let browser;
     let page;
-    let profileDir;
 
     beforeAll(async () => {
-
-        // create a unique temp profile dir to avoid "browser already running" conflicts
-        profileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer_profile_'));
-        try {
-            browser = await puppeteer.launch({
-                headless: headlessMode,
-                slowMo,
-                timeout: 0,
-                userDataDir: profileDir,
-                args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            });
-        } catch (err) {
-            // If the custom profile dir is locked/used by another process, fall back to default launch
-            // This avoids test failure when an external Chrome process is using the temp profile
-            // (the original error message suggests using a different userDataDir).
-            /* eslint-disable no-console */
-            console.warn('puppeteer.launch with userDataDir failed, falling back to default launch:', err.message);
-            /* eslint-enable no-console */
-            browser = await puppeteer.launch({
-                headless: headlessMode,
-                slowMo,
-                timeout: 0,
-                args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            });
-            // mark profileDir as undefined since we didn't use it
-            profileDir = undefined;
-        }
+        // Use 'new' headless mode and disable-dev-shm-usage for better Windows compatibility
+        browser = await puppeteer.launch({
+            headless: headlessMode,
+            slowMo,
+            timeout: 0,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--disable-gpu'
+            ],
+        });
         page = await browser.newPage();
         await page.goto('http://localhost:5173');
     }, 30000);
@@ -50,9 +34,9 @@ describe('show/hide event details', () => {
     afterAll(async () => {
 
         try {
-            if (page && !page.isClosed && typeof page.isClosed === 'function') {
-                const closed = await page.isClosed();
-                if (!closed) await page.close();
+            if (page && typeof page.isClosed === 'function') {
+                // page.isClosed() is synchronous and returns a boolean
+                if (!page.isClosed()) await page.close();
             } else if (page && page.close) {
                 await page.close();
             }
@@ -63,8 +47,9 @@ describe('show/hide event details', () => {
         try {
             if (browser) await browser.close();
         } catch (e) {
+            // if close fails, attempt to kill the underlying process as a last resort
             try {
-                if (browser && browser.process && typeof browser.process === 'function') {
+                if (browser && typeof browser.process === 'function') {
                     const proc = browser.process();
                     if (proc && proc.pid) {
                         try { process.kill(proc.pid); } catch (err) { /* ignore */ }
@@ -73,15 +58,6 @@ describe('show/hide event details', () => {
             } catch (err) {
                 // ignore
             }
-        }
-
-        // cleanup the temporary profile directory if it exists
-        try {
-            if (profileDir && fs.existsSync(profileDir)) {
-                fs.rmSync(profileDir, { recursive: true, force: true });
-            }
-        } catch (err) {
-            // ignore cleanup errors
         }
     });
 
@@ -112,36 +88,29 @@ describe('show/hide event details', () => {
 describe('Filter Events by City', () => {
     let browser;
     let page;
-    let profileDir;
+
     beforeAll(async () => {
-        profileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer_profile_'));
-        try {
-            browser = await puppeteer.launch({
-                headless: headlessMode,
-                slowMo,
-                timeout: 0,
-                userDataDir: profileDir,
-                args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            });
-        } catch (err) {
-            console.warn('puppeteer.launch with userDataDir failed, falling back to default launch:', err.message);
-            browser = await puppeteer.launch({
-                headless: headlessMode,
-                slowMo,
-                timeout: 0,
-                args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            });
-            profileDir = undefined;
-        }
+        // Launch with improved Windows compatibility settings
+        browser = await puppeteer.launch({
+            headless: headlessMode,
+            slowMo,
+            timeout: 0,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--disable-gpu'
+            ],
+        });
         page = await browser.newPage();
         await page.goto('http://localhost:5173');
     }, 30000);
 
     afterAll(async () => {
         try {
-            if (page && !page.isClosed && typeof page.isClosed === 'function') {
-                const closed = await page.isClosed();
-                if (!closed) await page.close();
+            if (page && typeof page.isClosed === 'function') {
+                if (!page.isClosed()) await page.close();
             } else if (page && page.close) {
                 await page.close();
             }
@@ -153,14 +122,6 @@ describe('Filter Events by City', () => {
             if (browser) await browser.close();
         } catch (e) {
             // ignore
-        }
-
-        try {
-            if (profileDir && fs.existsSync(profileDir)) {
-                fs.rmSync(profileDir, { recursive: true, force: true });
-            }
-        } catch (err) {
-            // ignore cleanup errors
         }
     });
 

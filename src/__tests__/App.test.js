@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import React from 'react';
-import { render, within, waitFor, cleanup } from '@testing-library/react';
+import { render, within, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getEvents } from '../api';
 import App from './../App';
@@ -17,17 +17,20 @@ jest.mock('../api', () => {
 describe('<App /> component', () => {
     test('renders without crashing', async () => {
         const { container } = render(<App />);
-        await waitFor(() => expect(container.querySelector('#event-list')).toBeInTheDocument());
+        await screen.findAllByRole('listitem');
+        expect(container.querySelector('#event-list')).toBeInTheDocument();
     });
 
     test('renders list of events', async () => {
         const { container } = render(<App />);
-        await waitFor(() => expect(container.querySelector('#event-list')).toBeInTheDocument());
+        await screen.findAllByRole('listitem');
+        expect(container.querySelector('#event-list')).toBeInTheDocument();
     });
 
     test('renders NumberOfEvents component', async () => {
         const { container } = render(<App />);
-        await waitFor(() => expect(container.querySelector('#number-of-events')).toBeInTheDocument());
+        await screen.findAllByRole('listitem');
+        expect(container.querySelector('#number-of-events')).toBeInTheDocument();
     });
 });
 
@@ -44,8 +47,7 @@ describe('<App /> integration', () => {
         const berlinSuggestionItem = await within(CitySearchDOM).findByText('Berlin, Germany');
         await user.click(berlinSuggestionItem);
 
-        const EventListDOM = AppDOM.querySelector('#event-list');
-        const allRenderedEventItems = await within(EventListDOM).findAllByRole('listitem');
+        const allRenderedEventItems = await screen.findAllByRole('listitem');
 
         const allEvents = await getEvents();
         const berlinEvents = allEvents.filter(
@@ -69,8 +71,7 @@ describe('<App /> integration', () => {
 
         await user.type(NumberOfEventsInput, '{backspace}{backspace}10');
 
-        const EventListDOM = AppDOM.querySelector('#event-list');
-        const allRenderedEventItems = await within(EventListDOM).findAllByRole('listitem');
+        const allRenderedEventItems = await screen.findAllByRole('listitem');
 
         expect(allRenderedEventItems.length).toBe(10);
     });

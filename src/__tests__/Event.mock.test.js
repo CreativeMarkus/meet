@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // src/__tests__/Event.mock.test.js
 import React from 'react'; // eslint-disable-line no-unused-vars
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Event from '../components/Event';
 
@@ -13,25 +13,25 @@ const mockEvent = {
 };
 
 describe('<Event /> component (mocked data)', () => {
-    test('renders event title, start time and location from mocked event', () => {
-        const { queryByText } = render(<Event event={mockEvent} />);
+    test('renders event title, start time and location from mocked event', async () => {
+        render(<Event event={mockEvent} />);
 
-        expect(queryByText(mockEvent.summary)).toBeInTheDocument();
-        expect(queryByText(mockEvent.created)).toBeInTheDocument();
-        expect(queryByText(mockEvent.location)).toBeInTheDocument();
+        expect(await screen.findByText(mockEvent.summary)).toBeInTheDocument();
+        expect(await screen.findByText(mockEvent.created)).toBeInTheDocument();
+        expect(await screen.findByText(mockEvent.location)).toBeInTheDocument();
     });
 
     test('toggles details when show/hide button is clicked (mocked event)', async () => {
         const user = userEvent.setup();
-        const { container, getByText } = render(<Event event={mockEvent} />);
+        const { container } = render(<Event event={mockEvent} />);
 
         expect(container.querySelector('.details')).not.toBeInTheDocument();
 
-        await user.click(getByText(/show details/i));
+        await user.click(await screen.findByText(/show details/i));
         expect(container.querySelector('.details')).toBeInTheDocument();
         expect(container.querySelector('.description')).toBeInTheDocument();
 
-        await user.click(getByText(/hide details/i));
+        await user.click(await screen.findByText(/hide details/i));
         expect(container.querySelector('.details')).not.toBeInTheDocument();
     });
 });

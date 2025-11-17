@@ -6,7 +6,7 @@ import Event from './Event';
 
 const EventList = ({ events = [] }) => {
     return (
-        <ul id="event-list">
+        <ul id="event-list" data-testid="event-list">
             {events.map((event, index) => (
                 <Event key={index} event={event} />
             ))}

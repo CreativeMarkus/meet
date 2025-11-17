@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { render, within } from '@testing-library/react';
+import { render, within, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CitySearch from '../components/CitySearch';
 import App from '../App';
@@ -79,6 +79,8 @@ describe('<CitySearch /> integration', () => {
         const user = userEvent.setup();
         const AppComponent = render(<App />);
         const AppDOM = AppComponent.container.firstChild;
+        // wait for app to finish initial async data fetch and render
+        await screen.findAllByRole('listitem');
 
 
         const CitySearchDOM = AppDOM.querySelector('#city-search');
