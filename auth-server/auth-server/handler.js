@@ -4,7 +4,7 @@
 const { google } = require('googleapis');
 const SCOPES = ['https://www.googleapis.com/auth/calendar.events.readonly'];
 
-const redirect_uri = 'https://meet-two-cyan.vercel.app';
+const redirect_uri = 'https://creativemarkus.github.io/meet';
 
 module.exports.getAuthURL = async () => {
     const { CLIENT_SECRET, CLIENT_ID } = process.env;

@@ -14,13 +14,16 @@ export const extractLocations = (events) => {
  * Fetch events from Google Calendar API via OAuth or use mock data as fallback.
  */
 export const getEvents = async () => {
-    // Always use mock data locally for development
-    if (window.location.href.startsWith('http://localhost')) {
-        console.log('Running locally, using mock data');
+    // Check if we should force OAuth (for testing purposes)
+    const forceOAuth = localStorage.getItem('forceOAuth') === 'true';
+
+    // Use mock data locally unless OAuth is forced
+    if (window.location.href.startsWith('http://localhost') && !forceOAuth) {
+        console.log('Running locally, using mock data (set localStorage.forceOAuth="true" to test OAuth)');
         return mockData;
     }
 
-    console.log('Running on deployed site, attempting Google OAuth flow...');
+    console.log('Attempting Google OAuth flow...');
 
     try {
         // Try to get access token (will trigger OAuth flow if needed)
