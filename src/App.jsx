@@ -3,6 +3,7 @@ import CitySearch from './components/CitySearch';
 import EventList from './components/EventList';
 import NumberOfEvents from './components/NumberOfEvents';
 import { extractLocations, getEvents, isAuthenticated } from './api';
+import mockData from './mock-data';
 
 import './App.css';
 
@@ -92,7 +93,6 @@ const App = () => {
         } catch (error) {
           console.error('Error fetching events, using mock data:', error);
           // Fallback to mock data if calendar API fails
-          const { default: mockData } = await import('./mock-data');
           allEvents = mockData;
         }
 
@@ -101,7 +101,6 @@ const App = () => {
         // Ensure we have events to display
         if (!allEvents || allEvents.length === 0) {
           console.log('No events found, using mock data');
-          const { default: mockData } = await import('./mock-data');
           allEvents = mockData;
         }
 
@@ -117,7 +116,6 @@ const App = () => {
         console.error('OAuth flow error:', error);
         // Fallback to mock data on any error
         try {
-          const { default: mockData } = await import('./mock-data');
           const filteredEvents = currentCity === 'See all cities'
             ? mockData
             : mockData.filter((event) => event.location === currentCity);
