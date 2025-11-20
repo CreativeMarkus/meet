@@ -1,6 +1,24 @@
 ﻿import mockData from './mock-data';
 
 /**
+ * Check if user is already authenticated
+ */
+export const isAuthenticated = async () => {
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) return false;
+    
+    try {
+        const response = await fetch(
+            `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}`
+        );
+        const result = await response.json();
+        return !result.error;
+    } catch (error) {
+        return false;
+    }
+};
+
+/**
  * Extract unique event locations.
  */
 export const extractLocations = (events) => {
