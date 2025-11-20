@@ -6,7 +6,7 @@
 export const isAuthenticated = async () => {
     const accessToken = localStorage.getItem('access_token');
     if (!accessToken) return false;
-    
+
     try {
         const response = await fetch(
             `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}`
