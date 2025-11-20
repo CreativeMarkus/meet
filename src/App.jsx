@@ -17,19 +17,9 @@ const App = () => {
   useEffect(() => {
     let isMounted = true;
 
-    const initApp = async () => {
+    const loadApp = async () => {
       try {
-        // Check if user is already authenticated
-        const authenticated = await isAuthenticated();
-
-        if (!authenticated) {
-          // Not authenticated - trigger OAuth immediately
-          const { getAccessToken } = await import('./api');
-          await getAccessToken(); // This will redirect to Google
-          return;
-        }
-
-        // User is authenticated - fetch data
+        // Try to get events - this will trigger OAuth if needed
         const allEvents = await getEvents();
         if (!isMounted) return;
 
@@ -41,12 +31,13 @@ const App = () => {
         setIsLoading(false);
       } catch (error) {
         if (!isMounted) return;
-        console.error('App initialization error:', error);
+        console.error('Failed to load app:', error);
+        // If error, the OAuth redirect should have already happened
         setIsLoading(false);
       }
     };
 
-    initApp();
+    loadApp();
 
     return () => { isMounted = false; };
   }, [currentCity, currentNOE]);
@@ -61,7 +52,9 @@ const App = () => {
         </div>
       </div>
     );
-  } return (
+  }
+
+  return (
     <div className="App">
       <div style={{ padding: '10px', background: '#e8f5e8', marginBottom: '20px', textAlign: 'center' }}>
         <p style={{ margin: '0', color: '#2e7d32' }}>
