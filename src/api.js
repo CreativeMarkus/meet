@@ -60,14 +60,15 @@ export const getEvents = async () => {
             console.log(`Successfully fetched ${result.events.length} real events from Google Calendar`);
             return result.events;
         } else {
-            console.log('No events returned from Google Calendar API');
-            // Return empty array instead of mock data when no events found
-            return [];
+            console.log('No events returned from Google Calendar API, using mock data');
+            // Return mock data when no events found so app isn't empty
+            return mockData;
         }
     } catch (error) {
         console.error('Error in OAuth/API flow:', error);
-        // Re-throw the error instead of falling back to mock data
-        throw error;
+        // Return mock data on error so app remains functional
+        console.log('Falling back to mock data due to API error');
+        return mockData;
     }
 }
 

@@ -127,8 +127,34 @@ const App = () => {
     );
   }
 
+  const handleLogout = () => {
+    // Clear access token and reload to restart OAuth flow
+    localStorage.removeItem('access_token');
+    alert('You have been logged out. You will be redirected to sign in again.');
+    window.location.reload();
+  };
+
   return (
     <div className="App">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', marginBottom: '20px' }}>
+        <h1 style={{ margin: '0', color: '#333' }}>Meet App</h1>
+        <button
+          onClick={handleLogout}
+          style={{
+            backgroundColor: '#dc3545',
+            color: 'white',
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px'
+          }}
+          onMouseOver={(e) => e.target.style.backgroundColor = '#c82333'}
+          onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
+        >
+          🚪 Logout
+        </button>
+      </div>
       <CitySearch allLocations={allLocations} setCurrentCity={setCurrentCity} />
       <NumberOfEvents setCurrentNOE={setCurrentNOE} />
       <EventList events={events} />
