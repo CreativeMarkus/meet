@@ -8,11 +8,31 @@ import './App.css';
 
 const App = () => {
   const [events, setEvents] = useState([]);
-
   const [currentNOE, setCurrentNOE] = useState(32);
   const [allLocations, setAllLocations] = useState([]);
   const [currentCity, setCurrentCity] = useState('See all cities');
   const [isLoading, setIsLoading] = useState(true);
+  const [userAuthorized, setUserAuthorized] = useState(true); // Assume authorized until checked
+
+  // Function to validate if user is in authorized test users list
+  const validateTestUser = async (accessToken) => {
+    try {
+      // Get user info from Google
+      const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`);
+      const userInfo = await response.json();
+
+      if (userInfo.email) {
+        console.log('User email:', userInfo.email);
+        const isAuthorized = AUTHORIZED_TEST_USERS.includes(userInfo.email.toLowerCase());
+        console.log('User authorized:', isAuthorized);
+        return isAuthorized;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error validating user:', error);
+      return false;
+    }
+  };
 
   useEffect(() => {
     // Copilot: Implement Google OAuth login handling for React app
