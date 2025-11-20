@@ -11,30 +11,22 @@ export const extractLocations = (events) => {
 };
 
 /**
- * Fetch events from Google Calendar API via OAuth or use mock data as fallback.
+ * Fetch events from Google Calendar API - requires OAuth authentication.
+ * Users must sign in with their Google account to use the app.
  */
 export const getEvents = async () => {
-    // Check if we should force OAuth (for testing purposes)
-    const forceOAuth = localStorage.getItem('forceOAuth') === 'true';
-
-    // Use mock data locally unless OAuth is forced
-    if (window.location.href.startsWith('http://localhost') && !forceOAuth) {
-        console.log('Running locally, using mock data (set localStorage.forceOAuth="true" to test OAuth)');
-        return mockData;
-    }
-
-    console.log('Attempting Google OAuth flow...');
+    console.log('Google OAuth authentication required to access calendar events...');
 
     try {
-        // Try to get access token (will trigger OAuth flow if needed)
+        // Always require OAuth authentication - no fallback to mock data
         const token = await getAccessToken();
 
         if (!token) {
-            console.log('No access token available, using mock data');
-            return mockData;
+            console.log('OAuth authentication failed or was cancelled');
+            throw new Error('Authentication required to access calendar events');
         }
 
-        console.log('Got access token, fetching events from Google Calendar API...');
+        console.log('User authenticated successfully, fetching events from Google Calendar...');
         const serverlessBaseUrl = 'https://j251282ei3.execute-api.eu-central-1.amazonaws.com/dev';
         const eventsEndpoint = `${serverlessBaseUrl}/api/get-events`;
 
@@ -50,13 +42,14 @@ export const getEvents = async () => {
             console.log(`Successfully fetched ${result.events.length} real events from Google Calendar`);
             return result.events;
         } else {
-            console.log('No events returned from Google Calendar API, using mock data');
-            return mockData;
+            console.log('No events returned from Google Calendar API');
+            // Return empty array instead of mock data when no events found
+            return [];
         }
     } catch (error) {
         console.error('Error in OAuth/API flow:', error);
-        console.log('Falling back to mock data due to error');
-        return mockData;
+        // Re-throw the error instead of falling back to mock data
+        throw error;
     }
 }
 
