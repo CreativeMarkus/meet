@@ -1,0 +1,123 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* CitySearch dropdown styling */
+#city-search {
+  position: relative;
+  display: inline-block;
+  width: 320px;
+  text-align: left;
+}
+
+input.city {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+/* room for the dropdown icon */
+input.city { padding-right: 2.5rem; }
+
+.city-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #333;
+}
+
+.city-toggle:focus { outline: 2px solid #90e0df; border-radius: 4px; }
+
+.city-toggle svg { display: block; }
+
+.city-toggle[aria-expanded="true"] svg { transform: rotate(180deg); transition: transform 180ms ease; }
+.city-toggle[aria-expanded="false"] svg { transition: transform 180ms ease; }
+
+.suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  padding: 0.25rem 0;
+  margin: 0;
+  list-style: none;
+  max-height: 320px;
+  overflow: auto;
+  z-index: 40;
+}
+
+.suggestions li {
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  font-size: 1.05rem;
+}
+
+.suggestions li:hover {
+  background: #cfe8e6; /* subtle teal like screenshot */
+}
+
+.suggestions li:last-child {
+  font-weight: 700;
+  padding: 1rem 1rem;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* ensure mobile friendly touch targets */
+@media (max-width: 480px) {
+  #city-search { width: 100%; }
+}

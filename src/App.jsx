@@ -1,0 +1,44 @@
+import React, { useEffect, useState } from 'react';
+import CitySearch from './components/CitySearch';
+import EventList from './components/EventList';
+import NumberOfEvents from './components/NumberOfEvents';
+import { extractLocations, getEvents } from './api';
+
+import './App.css';
+
+const App = () => {
+  const [events, setEvents] = useState([]);
+
+  const [currentNOE, setCurrentNOE] = useState(32);
+  const [allLocations, setAllLocations] = useState([]);
+  const [currentCity, setCurrentCity] = useState('See all cities');
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchData = async () => {
+      const allEvents = await getEvents();
+      if (!isMounted) return; // avoid setting state on unmounted component
+
+      const filteredEvents = currentCity === 'See all cities'
+        ? allEvents
+        : allEvents.filter((event) => event.location === currentCity);
+      setEvents(filteredEvents.slice(0, currentNOE));
+      setAllLocations(extractLocations(allEvents));
+    };
+
+    fetchData();
+
+    return () => { isMounted = false; };
+  }, [currentCity, currentNOE]);
+
+  return (
+    <div className="App">
+      <CitySearch allLocations={allLocations} setCurrentCity={setCurrentCity} />
+      <NumberOfEvents setCurrentNOE={setCurrentNOE} />
+      <EventList events={events} />
+    </div>
+  );
+}
+
+export default App;
