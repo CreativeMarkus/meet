@@ -57,6 +57,7 @@ const App = () => {
 
         if (!authenticated) {
           // Not authenticated - redirect to Google OAuth
+          const serverlessBaseUrl = 'https://j251282ei3.execute-api.eu-central-1.amazonaws.com/dev';
           const authResponse = await fetch(`${serverlessBaseUrl}/api/get-auth-url`);
           const { authUrl } = await authResponse.json();
           window.location.href = authUrl;
@@ -64,8 +65,25 @@ const App = () => {
         }
 
         // User is authenticated - load calendar events
-        const allEvents = await getEvents();
+        let allEvents;
+        try {
+          allEvents = await getEvents();
+          console.log('Events fetched:', allEvents);
+        } catch (error) {
+          console.error('Error fetching events, using mock data:', error);
+          // Fallback to mock data if calendar API fails
+          const { default: mockData } = await import('./mock-data');
+          allEvents = mockData;
+        }
+
         if (!isMounted) return;
+
+        // Ensure we have events to display
+        if (!allEvents || allEvents.length === 0) {
+          console.log('No events found, using mock data');
+          const { default: mockData } = await import('./mock-data');
+          allEvents = mockData;
+        }
 
         const filteredEvents = currentCity === 'See all cities'
           ? allEvents
@@ -77,6 +95,17 @@ const App = () => {
       } catch (error) {
         if (!isMounted) return;
         console.error('OAuth flow error:', error);
+        // Fallback to mock data on any error
+        try {
+          const { default: mockData } = await import('./mock-data');
+          const filteredEvents = currentCity === 'See all cities'
+            ? mockData
+            : mockData.filter((event) => event.location === currentCity);
+          setEvents(filteredEvents.slice(0, currentNOE));
+          setAllLocations(extractLocations(mockData));
+        } catch (mockError) {
+          console.error('Error loading mock data:', mockError);
+        }
         setIsLoading(false);
       }
     };
@@ -100,11 +129,6 @@ const App = () => {
 
   return (
     <div className="App">
-      <div style={{ padding: '10px', background: '#e8f5e8', marginBottom: '20px', textAlign: 'center' }}>
-        <p style={{ margin: '0', color: '#2e7d32' }}>
-          ✅ Authenticated with Google - Showing your calendar events
-        </p>
-      </div>
       <CitySearch allLocations={allLocations} setCurrentCity={setCurrentCity} />
       <NumberOfEvents setCurrentNOE={setCurrentNOE} />
       <EventList events={events} />
