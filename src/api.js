@@ -14,25 +14,39 @@ export const extractLocations = (events) => {
  * Fetch events from serverless API or local mock data (when running locally).
  */
 export const getEvents = async () => {
-    // Use mock data when running locally
     if (window.location.href.startsWith('http://localhost')) {
+        console.log('Running locally, using mock data');
         return mockData;
     }
 
-    const token = await getAccessToken();
-    if (!token) return [];
-
-    const serverlessBaseUrl =
-        'https://j251282ei3.execute-api.eu-central-1.amazonaws.com/dev';
-    const eventsEndpoint = `${serverlessBaseUrl}/api/get-events`;
+    console.log('Running on deployed site, attempting to fetch real events...');
 
     try {
+        const token = await getAccessToken();
+        if (!token) {
+            console.log('No token available, falling back to mock data');
+            return mockData;
+        }
+
+        const serverlessBaseUrl =
+            'https://j251282ei3.execute-api.eu-central-1.amazonaws.com/dev';
+        const eventsEndpoint = `${serverlessBaseUrl}/api/get-events`;
+
+        console.log('Fetching events with token...');
         const response = await fetch(`${eventsEndpoint}/${token}`);
         const result = await response.json();
-        return result.events || [];
+
+        if (result.events && result.events.length > 0) {
+            console.log(`Successfully fetched ${result.events.length} events`);
+            return result.events;
+        } else {
+            console.log('No events returned from API, falling back to mock data');
+            return mockData;
+        }
     } catch (error) {
         console.error('Error fetching events:', error);
-        return [];
+        console.log('Falling back to mock data due to error');
+        return mockData;
     }
 };
 
@@ -84,7 +98,6 @@ const getToken = async (code) => {
 export const getAccessToken = async () => {
     const accessToken = localStorage.getItem('access_token');
 
-    // Check if token exists and is valid
     const tokenCheck = accessToken && (await checkToken(accessToken));
 
     if (!accessToken || tokenCheck.error) {
