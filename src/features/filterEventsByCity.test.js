@@ -25,7 +25,6 @@ defineFeature(feature, test => {
 
         when('the user opens the app', async () => {
             render(<App />);
-            // wait for async fetchData and subsequent state updates to finish
             await screen.findAllByRole('listitem');
         });
 
@@ -44,7 +43,6 @@ defineFeature(feature, test => {
             const AppDOM = AppComponent.container.firstChild;
             CitySearchDOM = AppDOM.querySelector('#city-search');
             cityTextBox = screen.getByPlaceholderText('Search for a city');
-            // Wait for async fetchData to complete
             await screen.findAllByRole('listitem');
         });
 
@@ -73,7 +71,6 @@ defineFeature(feature, test => {
             AppDOM = AppComponent.container.firstChild;
             CitySearchDOM = AppDOM.querySelector('#city-search');
             citySearchInput = screen.getByPlaceholderText('Search for a city');
-            // Wait for initial async fetchData to complete
             await screen.findAllByRole('listitem');
             await user.type(citySearchInput, 'Berlin');
         });
