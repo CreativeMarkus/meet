@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import CitySearch from './components/CitySearch';
 import EventList from './components/EventList';
 import NumberOfEvents from './components/NumberOfEvents';
@@ -13,27 +13,7 @@ const App = () => {
   const [allLocations, setAllLocations] = useState([]);
   const [currentCity, setCurrentCity] = useState('See all cities');
   const [isLoading, setIsLoading] = useState(true);
-  const [userAuthorized, setUserAuthorized] = useState(true); // Assume authorized until checked
 
-  // Function to validate if user is in authorized test users list
-  const validateTestUser = async (accessToken) => {
-    try {
-      // Get user info from Google
-      const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${accessToken}`);
-      const userInfo = await response.json();
-
-      if (userInfo.email) {
-        console.log('User email:', userInfo.email);
-        const isAuthorized = AUTHORIZED_TEST_USERS.includes(userInfo.email.toLowerCase());
-        console.log('User authorized:', isAuthorized);
-        return isAuthorized;
-      }
-      return false;
-    } catch (error) {
-      console.error('Error validating user:', error);
-      return false;
-    }
-  };
 
   useEffect(() => {
 
@@ -74,7 +54,9 @@ const App = () => {
           const redirectUri = `${window.location.origin}/`;
           const scope = 'https://www.googleapis.com/auth/calendar.events.readonly';
 
+          console.log('Current window.location.origin:', window.location.origin);
           console.log('Using redirect URI:', redirectUri);
+          console.log('Client ID:', clientId);
 
           // Build Google OAuth URL directly
           const authParams = new URLSearchParams({
@@ -87,10 +69,13 @@ const App = () => {
           });
 
           const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${authParams.toString()}`;
-          console.log('Redirecting to:', authUrl);
+          console.log('Full OAuth URL:', authUrl);
 
-          // Redirect user to Google consent screen
-          window.location.href = authUrl;
+          // Add a small delay so logs are visible
+          setTimeout(() => {
+            console.log('Redirecting to Google OAuth...');
+            window.location.href = authUrl;
+          }, 2000);
           return;
         }
 
