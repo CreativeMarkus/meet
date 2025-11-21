@@ -36,13 +36,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    // Copilot: Implement Google OAuth login handling for React app
-    // 1. Detect if URL has `?code=` from Google redirect.
-    // 2. Send the code to backend API to exchange for access token.
-    // 3. Save the token in localStorage or state.
-    // 4. Remove the `?code=` from URL to prevent 404.
-    // 5. Show a loading message while processing.
-    // 6. Handle errors gracefully.
+
 
     let isMounted = true;
 
@@ -52,10 +46,8 @@ const App = () => {
         const code = urlParams.get('code');
 
         if (code) {
-          // Step 1: Code detected from Google redirect
           console.log('OAuth code detected, exchanging for access token...');
 
-          // Step 2: Send code to backend API to exchange for access token
           const serverlessBaseUrl = 'https://j251282ei3.execute-api.eu-central-1.amazonaws.com/dev';
           const tokenEndpoint = `${serverlessBaseUrl}/api/token/${encodeURIComponent(code)}`;
 
@@ -63,42 +55,54 @@ const App = () => {
           const { access_token } = await response.json();
 
           if (access_token) {
-            // Step 3: Save token in localStorage
             localStorage.setItem('access_token', access_token);
             console.log('Access token saved successfully');
           }
 
-          // Step 4: Remove the `?code=` from URL to prevent 404
           const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
           window.history.replaceState({}, document.title, newUrl);
         }
 
-        // Check if user is authenticated (either from new token or existing)
         const authenticated = await isAuthenticated();
 
         if (!authenticated) {
-          // Not authenticated - redirect to Google OAuth
-          const serverlessBaseUrl = 'https://j251282ei3.execute-api.eu-central-1.amazonaws.com/dev';
-          const authResponse = await fetch(`${serverlessBaseUrl}/api/get-auth-url`);
-          const { authUrl } = await authResponse.json();
+          // Direct redirect to Google consent screen
+          console.log('User not authenticated, redirecting to Google consent screen...');
+
+          // Google OAuth 2.0 configuration for Vercel deployment
+          const clientId = '263620562167-35c6bn2eqh8if4cb6iuugev7fu5ntahn.apps.googleusercontent.com';
+          const redirectUri = 'https://meet-mu-eight.vercel.app/';
+          const scope = 'https://www.googleapis.com/auth/calendar.events.readonly';
+
+          // Build Google OAuth URL directly
+          const authParams = new URLSearchParams({
+            client_id: clientId,
+            redirect_uri: redirectUri,
+            response_type: 'code',
+            scope: scope,
+            access_type: 'offline',
+            prompt: 'consent'
+          });
+
+          const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${authParams.toString()}`;
+          console.log('Redirecting to:', authUrl);
+
+          // Redirect user to Google consent screen
           window.location.href = authUrl;
           return;
         }
 
-        // User is authenticated - load calendar events
         let allEvents;
         try {
           allEvents = await getEvents();
           console.log('Events fetched:', allEvents);
         } catch (error) {
           console.error('Error fetching events, using mock data:', error);
-          // Fallback to mock data if calendar API fails
           allEvents = mockData;
         }
 
         if (!isMounted) return;
 
-        // Ensure we have events to display
         if (!allEvents || allEvents.length === 0) {
           console.log('No events found, using mock data');
           allEvents = mockData;
@@ -114,7 +118,6 @@ const App = () => {
       } catch (error) {
         if (!isMounted) return;
         console.error('OAuth flow error:', error);
-        // Fallback to mock data on any error
         try {
           const filteredEvents = currentCity === 'See all cities'
             ? mockData
@@ -133,7 +136,6 @@ const App = () => {
     return () => { isMounted = false; };
   }, [currentCity, currentNOE]);
 
-  // Show simple loading while redirecting to Google or loading data
   if (isLoading) {
     return (
       <div className="App">
