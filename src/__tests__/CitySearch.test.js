@@ -8,7 +8,6 @@ import App from '../App';
 import { extractLocations, getEvents } from '../api';
 import mockData from '../mock-data';
 
-// Mock api so getEvents returns local mock data during tests
 jest.mock('../api', () => {
     const actualApi = jest.requireActual('../api');
     return {
@@ -20,7 +19,7 @@ jest.mock('../api', () => {
 describe('<CitySearch /> component', () => {
     let CitySearchComponent;
     beforeEach(() => {
-        CitySearchComponent = render(<CitySearch allLocations={[]} />);
+        CitySearchComponent = render(<CitySearch allLocations={[]} setInfoAlert={() => { }} />);
     });
 
     test('renders text input', () => {
@@ -49,7 +48,7 @@ describe('<CitySearch /> component', () => {
         const user = userEvent.setup();
         const allEvents = await getEvents();
         const allLocations = extractLocations(allEvents);
-        CitySearchComponent.rerender(<CitySearch allLocations={allLocations} setCurrentCity={() => { }} />);
+        CitySearchComponent.rerender(<CitySearch allLocations={allLocations} setCurrentCity={() => { }} setInfoAlert={() => { }} />);
 
 
         const cityTextBox = CitySearchComponent.queryByRole('textbox');
@@ -79,7 +78,6 @@ describe('<CitySearch /> integration', () => {
         const user = userEvent.setup();
         const AppComponent = render(<App />);
         const AppDOM = AppComponent.container.firstChild;
-        // wait for app to finish initial async data fetch and render
         await screen.findAllByRole('listitem');
 
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 
-const CitySearch = ({ allLocations, setCurrentCity }) => {
+const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
@@ -20,6 +20,15 @@ const CitySearch = ({ allLocations, setCurrentCity }) => {
 
         setQuery(value);
         setSuggestions(filteredLocations);
+
+        // Set info alert based on search results
+        if (setInfoAlert) {
+            if (filteredLocations.length === 0) {
+                setInfoAlert('We cannot find the city you are looking for. Please try another city');
+            } else {
+                setInfoAlert('');
+            }
+        }
     };
 
     const handleItemClicked = (event) => {
@@ -27,6 +36,11 @@ const CitySearch = ({ allLocations, setCurrentCity }) => {
         setQuery(value);
         setShowSuggestions(false);
         setCurrentCity(value);
+
+        // Clear info alert when city is selected
+        if (setInfoAlert) {
+            setInfoAlert('');
+        }
     };
 
     return (
@@ -82,4 +96,5 @@ export default CitySearch;
 CitySearch.propTypes = {
     allLocations: PropTypes.arrayOf(PropTypes.string),
     setCurrentCity: PropTypes.func,
+    setInfoAlert: PropTypes.func,
 };
