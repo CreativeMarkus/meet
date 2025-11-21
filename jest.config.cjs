@@ -10,4 +10,12 @@ module.exports = {
     },
     moduleFileExtensions: ['js', 'jsx'],
     setupFilesAfterEnv: ['<rootDir>/setupTests.js'], // Path to the setup file
+    testEnvironmentOptions: {
+        customExportConditions: ['node', 'node-addons'],
+    },
+    globals: {
+        'process.env': {
+            NODE_ENV: 'test'
+        }
+    }
 };
