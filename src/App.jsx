@@ -46,17 +46,16 @@ const App = () => {
         const authenticated = await isAuthenticated();
 
         if (!authenticated) {
-          // Direct redirect to Google consent screen
+          // Direct redirect to Google consent screen with correct Client ID
           console.log('User not authenticated, redirecting to Google consent screen...');
 
-          // Google OAuth 2.0 configuration - auto-detect current domain
-          const clientId = '263620562167-35c6bn2eqh8if4cb6iuugev7fu5ntahn.apps.googleusercontent.com';
+          // Google OAuth 2.0 configuration with CORRECT Client ID
+          const clientId = '182267910547-sc4sjg9f41tvf1dcjplmqpb0q1s6b4gp.apps.googleusercontent.com';
           const redirectUri = `${window.location.origin}/`;
           const scope = 'https://www.googleapis.com/auth/calendar.events.readonly';
 
-          console.log('Current window.location.origin:', window.location.origin);
+          console.log('Using correct Client ID:', clientId);
           console.log('Using redirect URI:', redirectUri);
-          console.log('Client ID:', clientId);
 
           // Build Google OAuth URL directly
           const authParams = new URLSearchParams({
@@ -69,13 +68,9 @@ const App = () => {
           });
 
           const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${authParams.toString()}`;
-          console.log('Full OAuth URL:', authUrl);
+          console.log('Redirecting to:', authUrl);
 
-          // Add a small delay so logs are visible
-          setTimeout(() => {
-            console.log('Redirecting to Google OAuth...');
-            window.location.href = authUrl;
-          }, 2000);
+          window.location.href = authUrl;
           return;
         }
 
