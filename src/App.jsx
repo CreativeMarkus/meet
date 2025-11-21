@@ -69,10 +69,12 @@ const App = () => {
           // Direct redirect to Google consent screen
           console.log('User not authenticated, redirecting to Google consent screen...');
 
-          // Google OAuth 2.0 configuration for Vercel deployment
+          // Google OAuth 2.0 configuration - auto-detect current domain
           const clientId = '263620562167-35c6bn2eqh8if4cb6iuugev7fu5ntahn.apps.googleusercontent.com';
-          const redirectUri = 'https://meet-mu-eight.vercel.app/';
+          const redirectUri = `${window.location.origin}/`;
           const scope = 'https://www.googleapis.com/auth/calendar.events.readonly';
+
+          console.log('Using redirect URI:', redirectUri);
 
           // Build Google OAuth URL directly
           const authParams = new URLSearchParams({
