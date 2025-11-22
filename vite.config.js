@@ -9,42 +9,38 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       VitePWA({
+        devOptions: {
+          enabled: true,
+          type: 'module'
+        },
         manifest: {
-          "short_name": "React App",
-          "name": "Create React App Sample",
+          "short_name": "Meet App",
+          "name": "Meet - Event Discovery App",
           "icons": [
             {
-              "src": "favicon.ico",
-              "sizes": "48x48",
-              "type": "image/x-icon",
-              "purpose": "maskable"
-            },
-            {
-              "src": "meet-app-144.png",
-              "type": "image/png",
-              "sizes": "144x144",
+              "src": "vite.svg",
+              "sizes": "any",
+              "type": "image/svg+xml",
               "purpose": "any"
             },
             {
-              "src": "meet-app-192.png",
-              "type": "image/png",
+              "src": "vite.svg",
               "sizes": "192x192",
+              "type": "image/svg+xml",
               "purpose": "maskable"
             },
             {
-              "src": "meet-app-512.png",
-              "type": "image/png",
+              "src": "vite.svg",
               "sizes": "512x512",
+              "type": "image/svg+xml",
               "purpose": "maskable"
             }
           ],
-          "start_url": ".",
+          "start_url": "/",
           "display": "standalone",
           "theme_color": "#000000",
           "background_color": "#ffffff"
         },
-        srcDir: 'src', // Update if your service-worker.js is elsewhere
-        filename: 'service-worker.js', // Ensure it's accessible in production
         registerType: 'autoUpdate',
         workbox: {
           runtimeCaching: [
