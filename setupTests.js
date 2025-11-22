@@ -5,6 +5,19 @@ import React from 'react';
 // Make React available globally for JSX
 global.React = React;
 
+// Mock import.meta for Jest environment
+Object.defineProperty(globalThis, 'import', {
+    value: {
+        meta: {
+            env: {
+                MODE: 'test',
+                DEV: false,
+                PROD: false
+            }
+        }
+    }
+});
+
 // Increase Jest timeout for end-to-end tests
 jest.setTimeout(30000);
 
@@ -39,3 +52,34 @@ jest.mock('./src/api.js', () => {
         }),
     };
 });
+
+// Mock ResizeObserver for Recharts components
+const originalResizeObserver = typeof window !== 'undefined' ? window.ResizeObserver : undefined;
+
+beforeEach(() => {
+    if (typeof window !== 'undefined') {
+        //@ts-ignore
+        delete window.ResizeObserver;
+        window.ResizeObserver = jest.fn().mockImplementation(() => ({
+            observe: jest.fn(),
+            unobserve: jest.fn(),
+            disconnect: jest.fn(),
+        }));
+    }
+});
+
+afterEach(() => {
+    if (typeof window !== 'undefined' && originalResizeObserver) {
+        window.ResizeObserver = originalResizeObserver;
+    }
+    jest.restoreAllMocks();
+});
+
+// Mock import.meta.env for Jest
+global.importMeta = {
+    env: {
+        MODE: 'test',
+        DEV: false,
+        PROD: false
+    }
+};

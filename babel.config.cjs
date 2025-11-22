@@ -5,4 +5,10 @@ module.exports = {
         '@babel/preset-env',
         '@babel/preset-react',
     ],
+    plugins: [
+        ['babel-plugin-transform-vite-meta-env', {
+            NODE_ENV: 'test',
+            MODE: 'test'
+        }]
+    ],
 };

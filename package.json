@@ -17,8 +17,10 @@
   "dependencies": {
     "atatus-spa": "^4.7.0",
     "googleapis": "^118.0.0",
+    "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "recharts": "^3.4.1",
     "vite-plugin-pwa": "^1.1.0",
     "workbox-core": "^7.4.0",
     "workbox-expiration": "^7.4.0",
@@ -36,6 +38,7 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "babel-jest": "^30.2.0",
+    "babel-plugin-transform-vite-meta-env": "^1.0.3",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.2",
     "eslint-plugin-react-hooks": "^4.6.2",

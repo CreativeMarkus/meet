@@ -17,5 +17,9 @@ module.exports = {
         'process.env': {
             NODE_ENV: 'test'
         }
-    }
+    },
+    // Transform import.meta syntax
+    transformIgnorePatterns: [
+        'node_modules/(?!(recharts)/)'
+    ]
 };

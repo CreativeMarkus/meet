@@ -1,0 +1,58 @@
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import {
+    ScatterChart,
+    Scatter,
+    XAxis, YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer
+} from 'recharts';
+
+const CityEventsChart = ({ allLocations, events }) => {
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        const getData = () => {
+            const chartData = allLocations.map((location) => {
+                const count = events.filter((event) => event.location === location).length
+                const city = location.split((/, | - /))[0]
+                return { city, count };
+            }).filter(item => item.count > 0);
+            return chartData;
+        };
+
+        setData(getData());
+    }, [allLocations, events]);
+
+    return (
+        <div style={{ width: '100%', minWidth: '450px', height: 500, border: '2px solid #ddd', borderRadius: '8px', backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ResponsiveContainer width="100%" height={420}>
+                <ScatterChart
+                    margin={{
+                        top: 20,
+                        right: 20,
+                        bottom: 60,
+                        left: 20,
+                    }}
+                >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                        type="category" dataKey="city" name="City"
+                        angle={60} interval={0} tick={{ dx: 20, dy: 40, fontSize: 14 }}
+                    />
+                    <YAxis type="number" dataKey="count" name="Number of events" allowDecimals={false} />
+                    <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                    <Scatter name="Events" data={data} fill="#8884d8" />
+                </ScatterChart>
+            </ResponsiveContainer>
+        </div>
+    );
+}
+
+CityEventsChart.propTypes = {
+    allLocations: PropTypes.array.isRequired,
+    events: PropTypes.array.isRequired
+};
+
+export default CityEventsChart;

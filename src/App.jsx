@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import CitySearch from './components/CitySearch';
 import EventList from './components/EventList';
 import NumberOfEvents from './components/NumberOfEvents';
+import CityEventsChart from './components/CityEventsChart';
+import EventGenresChart from './components/EventGenresChart';
 import { InfoAlert, ErrorAlert, WarningAlert } from './components/Alert';
 import { extractLocations, getEvents, isAuthenticated } from './api';
 import mockData from './mock-data';
@@ -10,6 +12,7 @@ import './App.css';
 
 const App = () => {
   const [events, setEvents] = useState([]);
+  const [allEvents, setAllEvents] = useState([]);
   const [currentNOE, setCurrentNOE] = useState(32);
   const [allLocations, setAllLocations] = useState([]);
   const [currentCity, setCurrentCity] = useState('See all cities');
@@ -33,6 +36,7 @@ const App = () => {
       try {
         if (import.meta.env.MODE === 'test' || import.meta.env.MODE === 'development') {
           console.log('Development/Test environment detected, using mock data (no authentication required)');
+          setAllEvents(mockData);
           const filteredEvents = currentCity === 'See all cities'
             ? mockData
             : mockData.filter((event) => event.location === currentCity);
@@ -116,6 +120,7 @@ const App = () => {
           allEvents = mockData;
         }
 
+        setAllEvents(allEvents);
         const filteredEvents = currentCity === 'See all cities'
           ? allEvents
           : allEvents.filter((event) => event.location === currentCity);
@@ -127,6 +132,7 @@ const App = () => {
         if (!isMounted) return;
         console.error('OAuth flow error:', error);
         try {
+          setAllEvents(mockData);
           const filteredEvents = currentCity === 'See all cities'
             ? mockData
             : mockData.filter((event) => event.location === currentCity);
@@ -189,6 +195,7 @@ const App = () => {
 
   return (
     <div className="App">
+      <h1>Meet App</h1>
       <div className="alerts-container">
         {infoAlert.length > 0 && <InfoAlert text={infoAlert} />}
         {errorAlert.length > 0 && <ErrorAlert text={errorAlert} />}
@@ -197,6 +204,10 @@ const App = () => {
 
       <CitySearch allLocations={allLocations} setCurrentCity={setCurrentCity} setInfoAlert={setInfoAlert} />
       <NumberOfEvents setCurrentNOE={setCurrentNOE} setErrorAlert={setErrorAlert} />
+      <div className="charts-container">
+        <EventGenresChart events={events} />
+        <CityEventsChart allLocations={allLocations} events={allEvents} />
+      </div>
       <EventList events={events} />
     </div>
   );
