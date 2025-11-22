@@ -13,9 +13,11 @@ export default defineConfig(({ mode }) => {
           enabled: true,
           type: 'module'
         },
+        includeAssets: ['favicon.ico', 'vite.svg'],
         manifest: {
           "short_name": "Meet App",
           "name": "Meet - Event Discovery App",
+          "description": "Discover events in your city with Meet App",
           "icons": [
             {
               "src": "vite.svg",
@@ -27,30 +29,45 @@ export default defineConfig(({ mode }) => {
               "src": "vite.svg",
               "sizes": "192x192",
               "type": "image/svg+xml",
-              "purpose": "maskable"
+              "purpose": "any maskable"
             },
             {
               "src": "vite.svg",
               "sizes": "512x512",
               "type": "image/svg+xml",
-              "purpose": "maskable"
+              "purpose": "any maskable"
             }
           ],
           "start_url": "/",
+          "scope": "/",
           "display": "standalone",
+          "orientation": "portrait-primary",
           "theme_color": "#000000",
-          "background_color": "#ffffff"
+          "background_color": "#ffffff",
+          "categories": ["social", "utilities"],
+          "lang": "en"
         },
-        registerType: 'autoUpdate',
+        registerType: 'prompt',
+        mode: 'development',
+        injectRegister: 'auto',
         workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
           runtimeCaching: [
             {
-              urlPattern: /\/.*\.png$/, // Example pattern for caching png images
+              urlPattern: /^https:\/\/fonts\.googleapis\.com/,
               handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'google-fonts-stylesheets',
+              },
+            },
+            {
+              urlPattern: /\/.*\.png$/,
+              handler: 'CacheFirst',
               options: {
                 cacheName: 'images',
                 expiration: {
                   maxEntries: 50,
+                  maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
                 },
               },
             },

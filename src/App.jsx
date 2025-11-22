@@ -138,6 +138,38 @@ const App = () => {
     return () => { isMounted = false; };
   }, [currentCity, currentNOE]);
 
+  // PWA Install Prompt Handler - Allow automatic browser prompts
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (event) => {
+      console.log('PWA install prompt is available', event);
+      // Don't call preventDefault() - let the browser show automatic prompts
+      console.log('Automatic install prompt should appear');
+    };
+
+    const handleAppInstalled = (event) => {
+      console.log('App was installed successfully', event);
+    };
+
+    // Register service worker manually to ensure it's active
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered successfully:', registration);
+        })
+        .catch((error) => {
+          console.log('Service Worker registration failed:', error);
+        });
+    }
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, []);
+
   if (isLoading) {
     return (
       <div className="App">
@@ -155,6 +187,7 @@ const App = () => {
         {infoAlert.length > 0 && <InfoAlert text={infoAlert} />}
         {errorAlert.length > 0 && <ErrorAlert text={errorAlert} />}
       </div>
+
       <CitySearch allLocations={allLocations} setCurrentCity={setCurrentCity} setInfoAlert={setInfoAlert} />
       <NumberOfEvents setCurrentNOE={setCurrentNOE} setErrorAlert={setErrorAlert} />
       <EventList events={events} />
