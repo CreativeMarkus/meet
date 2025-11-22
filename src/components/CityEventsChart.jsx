@@ -26,7 +26,7 @@ const CityEventsChart = ({ allLocations, events }) => {
     }, [allLocations, events]);
 
     return (
-        <div style={{ width: '100%', minWidth: '450px', height: 500, border: '2px solid #ddd', borderRadius: '8px', backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '100%', height: 500, border: '2px solid #ddd', borderRadius: '8px', backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <ResponsiveContainer width="100%" height={420}>
                 <ScatterChart
                     margin={{
@@ -39,7 +39,7 @@ const CityEventsChart = ({ allLocations, events }) => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
                         type="category" dataKey="city" name="City"
-                        angle={60} interval={0} tick={{ dx: 20, dy: 40, fontSize: 14 }}
+                        angle={60} interval={0} tick={{ dx: 20, dy: 40, fontSize: window.innerWidth < 480 ? 10 : 14 }}
                     />
                     <YAxis type="number" dataKey="count" name="Number of events" allowDecimals={false} />
                     <Tooltip cursor={{ strokeDasharray: '3 3' }} />

@@ -19,6 +19,8 @@ const EventGenresChart = ({ events }) => {
         const radius = outerRadius;
         const x = cx + radius * Math.cos(-midAngle * RADIAN) * 1.07;
         const y = cy + radius * Math.sin(-midAngle * RADIAN) * 1.07;
+        // Responsive font size based on screen width
+        const fontSize = window.innerWidth < 480 ? "10px" : "12px";
         return percent > 0.02 ? (
             <text
                 x={x}
@@ -26,7 +28,7 @@ const EventGenresChart = ({ events }) => {
                 fill="#333"
                 textAnchor={x > cx ? 'start' : 'end'}
                 dominantBaseline="central"
-                fontSize="12px"
+                fontSize={fontSize}
                 fontWeight="500"
             >
                 {`${(percent * 100).toFixed(0)}%`}
@@ -55,14 +57,14 @@ const EventGenresChart = ({ events }) => {
     // Debug: show data info
     if (!data || data.length === 0) {
         return (
-            <div style={{ width: '100%', minWidth: '500px', height: 400, border: '2px solid #ddd', borderRadius: '8px', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+            <div style={{ width: '100%', height: 400, border: '2px solid #ddd', borderRadius: '8px', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
                 <p>No chart data available. Events: {events?.length || 0}</p>
             </div>
         );
     }
 
     return (
-        <div style={{ width: '100%', minWidth: '450px', height: 500, border: '2px solid #ddd', borderRadius: '8px', backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '100%', height: 500, border: '2px solid #ddd', borderRadius: '8px', backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <ResponsiveContainer width="100%" height={420}>
                 <PieChart>
                     <Pie
@@ -71,7 +73,7 @@ const EventGenresChart = ({ events }) => {
                         fill="#8884d8"
                         labelLine={false}
                         label={renderCustomizedLabel}
-                        outerRadius={160}
+                        outerRadius={"80%"}
                         cx="50%"
                         cy="50%"
                     >

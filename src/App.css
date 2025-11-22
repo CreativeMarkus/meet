@@ -154,3 +154,15 @@ input.city { padding-right: 2.5rem; }
     margin: 20px 10px;
   }
 }
+
+/* Mobile specific chart adjustments */
+@media (max-width: 480px) {
+  .charts-container {
+    margin: 10px 5px;
+    gap: 15px;
+  }
+  
+  #root {
+    padding: 1rem;
+  }
+}
