@@ -34,19 +34,19 @@ const App = () => {
 
     const handleOAuthFlow = async () => {
       try {
-        // Always use mock data for now (no authentication)
+        // Always use mock data (force it regardless of environment)
+        console.log('Environment MODE:', import.meta.env.MODE);
         console.log('Using mock data (no authentication required)');
+        console.log('Mock data length:', mockData.length);
         setAllEvents(mockData);
-        const filteredEvents = currentCity === 'See all cities'
+        const mockFilteredEvents = currentCity === 'See all cities'
           ? mockData
           : mockData.filter((event) => event.location === currentCity);
-        setEvents(filteredEvents.slice(0, currentNOE));
+        console.log('Filtered events length:', mockFilteredEvents.length);
+        setEvents(mockFilteredEvents.slice(0, currentNOE));
         setAllLocations(extractLocations(mockData));
         setIsLoading(false);
         return;
-        
-        // Original authentication code (commented out for now)
-        /*
 
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
