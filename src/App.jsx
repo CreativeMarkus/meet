@@ -34,18 +34,19 @@ const App = () => {
 
     const handleOAuthFlow = async () => {
       try {
-        // For now, use mock data in all environments (including production)
-        if (import.meta.env.MODE === 'test' || import.meta.env.MODE === 'development' || import.meta.env.MODE === 'production') {
-          console.log('Using mock data (no authentication required)');
-          setAllEvents(mockData);
-          const filteredEvents = currentCity === 'See all cities'
-            ? mockData
-            : mockData.filter((event) => event.location === currentCity);
-          setEvents(filteredEvents.slice(0, currentNOE));
-          setAllLocations(extractLocations(mockData));
-          setIsLoading(false);
-          return;
-        }
+        // Always use mock data for now (no authentication)
+        console.log('Using mock data (no authentication required)');
+        setAllEvents(mockData);
+        const filteredEvents = currentCity === 'See all cities'
+          ? mockData
+          : mockData.filter((event) => event.location === currentCity);
+        setEvents(filteredEvents.slice(0, currentNOE));
+        setAllLocations(extractLocations(mockData));
+        setIsLoading(false);
+        return;
+        
+        // Original authentication code (commented out for now)
+        /*
 
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
