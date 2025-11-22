@@ -31,9 +31,17 @@ export const extractLocations = (events) => {
 /**
  * Fetch events from Google Calendar API - requires OAuth authentication.
  * Users must sign in with their Google account to use the app.
+ * Supports offline functionality by caching events in localStorage.
  */
 export const getEvents = async () => {
     console.log('Google OAuth authentication required to access calendar events...');
+
+    // Check if user is offline and return cached events
+    if (!navigator.onLine) {
+        console.log('User is offline, loading cached events from localStorage...');
+        const events = localStorage.getItem("lastEvents");
+        return events ? JSON.parse(events) : [];
+    }
 
     try {
         const token = await getAccessToken();
@@ -57,14 +65,26 @@ export const getEvents = async () => {
 
         if (result.events && Array.isArray(result.events) && result.events.length > 0) {
             console.log(`Successfully fetched ${result.events.length} real events from Google Calendar`);
+            // Cache the events for offline use
+            localStorage.setItem("lastEvents", JSON.stringify(result.events));
             return result.events;
         } else {
             console.log('No events returned from Google Calendar API, using mock data');
+            // Cache mock data as fallback
+            localStorage.setItem("lastEvents", JSON.stringify(mockData));
             return mockData;
         }
     } catch (error) {
         console.error('Error in OAuth/API flow:', error);
         console.log('Falling back to mock data due to API error');
+        // Try to return cached events first, then mock data
+        const cachedEvents = localStorage.getItem("lastEvents");
+        if (cachedEvents) {
+            console.log('Using cached events from localStorage');
+            return JSON.parse(cachedEvents);
+        }
+        // Cache mock data for future offline use
+        localStorage.setItem("lastEvents", JSON.stringify(mockData));
         return mockData;
     }
 }
