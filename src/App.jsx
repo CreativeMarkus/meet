@@ -34,8 +34,9 @@ const App = () => {
 
     const handleOAuthFlow = async () => {
       try {
-        if (import.meta.env.MODE === 'test' || import.meta.env.MODE === 'development') {
-          console.log('Development/Test environment detected, using mock data (no authentication required)');
+        // For now, use mock data in all environments (including production)
+        if (import.meta.env.MODE === 'test' || import.meta.env.MODE === 'development' || import.meta.env.MODE === 'production') {
+          console.log('Using mock data (no authentication required)');
           setAllEvents(mockData);
           const filteredEvents = currentCity === 'See all cities'
             ? mockData
