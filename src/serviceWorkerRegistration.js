@@ -19,7 +19,7 @@ const isLocalhost = Boolean(
 );
 
 export function register(config) {
-    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+    if (import.meta.env.MODE === 'production' && 'serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             const swUrl = '/service-worker.js';
 
