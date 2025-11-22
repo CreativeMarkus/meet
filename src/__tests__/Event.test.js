@@ -13,7 +13,6 @@ describe('<Event /> component', () => {
 
         render(<Event event={event} />);
 
-        // wait for the component text nodes to appear (wraps updates in act)
         expect(await screen.findByText(event.summary)).toBeInTheDocument();
         expect(await screen.findByText(event.created)).toBeInTheDocument();
         expect(await screen.findByText(event.location)).toBeInTheDocument();
@@ -31,7 +30,6 @@ describe('<Event /> component', () => {
         const detailsButton = await screen.findByText(/show details/i);
         await user.click(detailsButton);
 
-        // wait for details to appear
         expect(container.querySelector('.details')).toBeInTheDocument();
         if (event.description) {
             expect(container.querySelector('.description')).toBeInTheDocument();
@@ -40,7 +38,6 @@ describe('<Event /> component', () => {
         expect(await screen.findByText(/hide details/i)).toBeInTheDocument();
 
         await user.click(await screen.findByText(/hide details/i));
-        // details should be removed
         expect(container.querySelector('.details')).not.toBeInTheDocument();
     });
 });

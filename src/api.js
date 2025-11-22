@@ -36,7 +36,6 @@ export const getEvents = async () => {
     console.log('Google OAuth authentication required to access calendar events...');
 
     try {
-        // Always require OAuth authentication - no fallback to mock data
         const token = await getAccessToken();
 
         if (!token) {
@@ -61,12 +60,10 @@ export const getEvents = async () => {
             return result.events;
         } else {
             console.log('No events returned from Google Calendar API, using mock data');
-            // Return mock data when no events found so app isn't empty
             return mockData;
         }
     } catch (error) {
         console.error('Error in OAuth/API flow:', error);
-        // Return mock data on error so app remains functional
         console.log('Falling back to mock data due to API error');
         return mockData;
     }

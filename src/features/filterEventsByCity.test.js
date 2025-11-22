@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { loadFeature, defineFeature } from 'jest-cucumber';
-import { render, within, waitFor, screen } from '@testing-library/react';
+import { render, within, waitFor, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
 import { getEvents } from '../api';
@@ -99,4 +99,8 @@ defineFeature(feature, test => {
             expect(EventListItems.length).toBe(berlinEvents.length);
         });
     });
+});
+
+afterEach(() => {
+    cleanup();
 });

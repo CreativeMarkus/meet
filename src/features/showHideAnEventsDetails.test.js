@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { loadFeature, defineFeature } from 'jest-cucumber';
-import { render, waitFor, within, screen } from '@testing-library/react';
+import { render, waitFor, within, screen, cleanup } from '@testing-library/react';
 import mockData from '../mock-data';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
@@ -20,12 +20,10 @@ defineFeature(feature, test => {
     test('An event element is collapsed by default', ({ given, when, then }) => {
         given('the user has opened the app', async () => {
             render(<App />);
-            // wait for async fetchData and state updates to complete
             await screen.findAllByRole('listitem');
         });
 
         when('the user views the list of events', async () => {
-            // wait for events to be displayed
             const events = await screen.findAllByRole('listitem');
             expect(events.length).toBeGreaterThan(0);
         });
@@ -34,10 +32,8 @@ defineFeature(feature, test => {
             const events = await screen.findAllByRole('listitem');
             const firstEvent = events[0];
             expect(firstEvent).toBeDefined();
-            // button should show "Show details" when collapsed
             const button = within(firstEvent).getByRole('button');
             expect(button).toHaveTextContent(/show details/i);
-            // details description should not be visible
             const description = within(firstEvent).queryByText(/Have you wondered how you can ask Google/i);
             expect(description).toBeNull();
         });
@@ -46,7 +42,6 @@ defineFeature(feature, test => {
     test('User can expand an event to see details', ({ given, and, when, then }) => {
         given('the user has opened the app', async () => {
             render(<App />);
-            // ensure initial async fetch and renders are complete
             await screen.findAllByRole('listitem');
         });
 
@@ -64,10 +59,8 @@ defineFeature(feature, test => {
         });
 
         then("the event's details should be shown", async () => {
-            // wait for the description text from mock-data to appear
             const descriptionNode = await screen.findByText(/Have you wondered how you can ask Google/i);
             expect(descriptionNode).toBeInTheDocument();
-            // button text should reflect expanded state
             const events = await screen.findAllByRole('listitem');
             const firstEvent = events[0];
             const button = within(firstEvent).getByRole('button');
@@ -83,7 +76,6 @@ defineFeature(feature, test => {
             const firstEvent = events[0];
             const button = within(firstEvent).getByRole('button');
             await user.click(button);
-            // confirm details are visible
             await screen.findByText(/Have you wondered how you can ask Google/i);
         });
 
@@ -95,11 +87,14 @@ defineFeature(feature, test => {
             await user.click(button);
         });
         then("the event's details should be hidden", async () => {
-            // wait for the description to be removed from the document
             await waitFor(() => {
                 const description = screen.queryByText(/Have you wondered how you can ask Google/i);
                 expect(description).toBeNull();
             });
         });
     });
+});
+
+afterEach(() => {
+    cleanup();
 });
