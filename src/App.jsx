@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import CitySearch from './components/CitySearch';
 import EventList from './components/EventList';
 import NumberOfEvents from './components/NumberOfEvents';
-import { InfoAlert, ErrorAlert } from './components/Alert';
+import { InfoAlert, ErrorAlert, WarningAlert } from './components/Alert';
 import { extractLocations, getEvents, isAuthenticated } from './api';
 import mockData from './mock-data';
 
@@ -16,10 +16,16 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [infoAlert, setInfoAlert] = useState('');
   const [errorAlert, setErrorAlert] = useState('');
+  const [warningAlert, setWarningAlert] = useState('');
 
 
   useEffect(() => {
-
+    // Check online status and set warning alert
+    if (navigator.onLine) {
+      setWarningAlert('');
+    } else {
+      setWarningAlert('You are currently offline. The displayed events may not be up to date.');
+    }
 
     let isMounted = true;
 
@@ -186,6 +192,7 @@ const App = () => {
       <div className="alerts-container">
         {infoAlert.length > 0 && <InfoAlert text={infoAlert} />}
         {errorAlert.length > 0 && <ErrorAlert text={errorAlert} />}
+        {warningAlert.length > 0 && <WarningAlert text={warningAlert} />}
       </div>
 
       <CitySearch allLocations={allLocations} setCurrentCity={setCurrentCity} setInfoAlert={setInfoAlert} />
