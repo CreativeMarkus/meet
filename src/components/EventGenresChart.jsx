@@ -63,9 +63,13 @@ const EventGenresChart = ({ events }) => {
         );
     }
 
+    const isMobile = window.innerWidth < 480;
+    const containerPadding = isMobile ? '10px' : '35px';
+    const pieRadius = isMobile ? "90%" : "80%";
+
     return (
-        <div style={{ width: '100%', height: 500, border: '2px solid #ddd', borderRadius: '8px', backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ResponsiveContainer width="100%" height={420}>
+        <div style={{ width: '100%', height: isMobile ? 400 : 450, border: '2px solid #ddd', borderRadius: '8px', backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: containerPadding, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ResponsiveContainer width="100%" height={isMobile ? 320 : 370}>
                 <PieChart>
                     <Pie
                         data={data}
@@ -73,7 +77,7 @@ const EventGenresChart = ({ events }) => {
                         fill="#8884d8"
                         labelLine={false}
                         label={renderCustomizedLabel}
-                        outerRadius={"80%"}
+                        outerRadius={pieRadius}
                         cx="50%"
                         cy="50%"
                     >

@@ -25,15 +25,18 @@ const CityEventsChart = ({ allLocations, events }) => {
         setData(getData());
     }, [allLocations, events]);
 
+    const isMobile = window.innerWidth < 480;
+    const containerPadding = isMobile ? '10px' : '35px';
+
     return (
-        <div style={{ width: '100%', height: 500, border: '2px solid #ddd', borderRadius: '8px', backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ResponsiveContainer width="100%" height={420}>
+        <div style={{ width: '100%', height: isMobile ? 400 : 450, border: '2px solid #ddd', borderRadius: '8px', backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: containerPadding, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ResponsiveContainer width="100%" height={isMobile ? 320 : 370}>
                 <ScatterChart
                     margin={{
-                        top: 20,
-                        right: 20,
-                        bottom: 60,
-                        left: 20,
+                        top: 30,
+                        right: 30,
+                        bottom: 80,
+                        left: 30,
                     }}
                 >
                     <CartesianGrid strokeDasharray="3 3" />
