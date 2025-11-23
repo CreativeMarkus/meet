@@ -64,8 +64,8 @@ const EventGenresChart = ({ events }) => {
     }
 
     const isMobile = window.innerWidth < 480;
-    const containerPadding = isMobile ? '10px' : '35px';
-    const pieRadius = isMobile ? "90%" : "80%";
+    const containerPadding = isMobile ? '10px' : '25px';
+    const pieRadius = isMobile ? "90%" : 140;
 
     return (
         <div style={{ width: '100%', height: isMobile ? 400 : 450, border: '2px solid #ddd', borderRadius: '8px', backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', padding: containerPadding, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

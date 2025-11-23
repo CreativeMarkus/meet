@@ -1,8 +1,8 @@
 #root {
-  max-width: 1600px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  width: 100%;
 }
 
 .alerts-container {
@@ -139,10 +139,10 @@ input.city { padding-right: 2.5rem; }
 .charts-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 30px;
+  gap: 40px;
   margin: 30px auto;
-  width: 90%;
-  max-width: 1200px;
+  width: 95%;
+  max-width: 1600px;
 }
 
 /* Mobile and tablet responsiveness for charts */
