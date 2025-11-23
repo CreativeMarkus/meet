@@ -1,7 +1,8 @@
 // Custom Service Worker for Meet App PWA
-const CACHE_NAME = 'meet-app-v1';
+// Bump this version whenever deployment should force-refresh clients
+const CACHE_NAME = 'meet-app-v4';
+// Avoid caching the app shell HTML ('/') to prevent stale deployments
 const urlsToCache = [
-    '/',
     '/manifest.json',
     '/vite.svg'
 ];
@@ -44,12 +45,41 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', (event) => {
+    const { request } = event;
+
+    // Network-first for navigation requests (HTML) to always get fresh builds
+    if (request.mode === 'navigate') {
+        event.respondWith(
+            (async () => {
+                try {
+                    const networkResponse = await fetch(request);
+                    return networkResponse;
+                } catch (err) {
+                    // Fallback to cache if offline
+                    const cache = await caches.open(CACHE_NAME);
+                    const cached = await cache.match('/');
+                    return cached || Response.error();
+                }
+            })()
+        );
+        return;
+    }
+
+    // For other requests: try cache, then network, and update cache
     event.respondWith(
-        caches.match(event.request)
-            .then((response) => {
-                // Return cached version or fetch from network
-                return response || fetch(event.request);
-            })
+        (async () => {
+            const cache = await caches.open(CACHE_NAME);
+            const cached = await cache.match(request);
+            if (cached) return cached;
+            try {
+                const networkResponse = await fetch(request);
+                // Clone and store in cache (best-effort)
+                cache.put(request, networkResponse.clone());
+                return networkResponse;
+            } catch (err) {
+                return Response.error();
+            }
+        })()
     );
 });
 
