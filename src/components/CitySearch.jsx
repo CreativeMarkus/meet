@@ -5,6 +5,7 @@ const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
+    const [localInfoAlert, setLocalInfoAlert] = useState('');
 
     useEffect(() => {
         setSuggestions(allLocations);
@@ -21,12 +22,39 @@ const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
         setQuery(value);
         setSuggestions(filteredLocations);
 
-        // Set info alert based on search results
+        // Clear previous alerts when typing
+        setLocalInfoAlert('');
         if (setInfoAlert) {
-            if (filteredLocations.length === 0) {
-                setInfoAlert('We cannot find the city you are looking for. Please try another city');
-            } else {
+            setInfoAlert('');
+        }
+    };
+
+    const handleSearchClick = () => {
+        const trimmedQuery = query.trim();
+        if (trimmedQuery === '') {
+            setLocalInfoAlert('Please enter a city name');
+            if (setInfoAlert) {
+                setInfoAlert('Please enter a city name');
+            }
+            return;
+        }
+
+        const matchedCity = allLocations.find(location =>
+            location.toUpperCase() === trimmedQuery.toUpperCase()
+        );
+
+        if (matchedCity) {
+            setCurrentCity(matchedCity);
+            setShowSuggestions(false);
+            setLocalInfoAlert('');
+            if (setInfoAlert) {
                 setInfoAlert('');
+            }
+        } else {
+            const alertMsg = 'We cannot find the city you are looking for. Please try another city';
+            setLocalInfoAlert(alertMsg);
+            if (setInfoAlert) {
+                setInfoAlert(alertMsg);
             }
         }
     };
@@ -38,6 +66,7 @@ const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
         setCurrentCity(value);
 
         // Clear info alert when city is selected
+        setLocalInfoAlert('');
         if (setInfoAlert) {
             setInfoAlert('');
         }
@@ -45,33 +74,43 @@ const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
 
     return (
         <div id="city-search">
-            <input
-                type="text"
-                className="city"
-                placeholder="Search for a city"
-                role="textbox"
-                aria-label="City"
-                value={query}
-                onFocus={() => {
-                    setShowSuggestions(true);
-                    setSuggestions(allLocations || []);
-                }}
-                onChange={handleInputChanged}
-            />
+            <div className="input-container-wrapper">
+                <input
+                    type="text"
+                    className="city"
+                    placeholder="Search for a city"
+                    role="textbox"
+                    aria-label="City"
+                    value={query}
+                    onFocus={() => {
+                        setShowSuggestions(true);
+                        setSuggestions(allLocations || []);
+                    }}
+                    onChange={handleInputChanged}
+                />
+                <button
+                    type="button"
+                    className="city-toggle"
+                    aria-expanded={showSuggestions}
+                    aria-label={showSuggestions ? 'Hide suggestions' : 'Show suggestions'}
+                    onClick={() => {
+                        const next = !showSuggestions;
+                        setShowSuggestions(next);
+                        if (next) setSuggestions(allLocations || []);
+                    }}
+                >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
+            </div>
             <button
                 type="button"
-                className="city-toggle"
-                aria-expanded={showSuggestions}
-                aria-label={showSuggestions ? 'Hide suggestions' : 'Show suggestions'}
-                onClick={() => {
-                    const next = !showSuggestions;
-                    setShowSuggestions(next);
-                    if (next) setSuggestions(allLocations || []);
-                }}
+                className="search-button"
+                onClick={handleSearchClick}
+                aria-label="Search for events in this city"
             >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                Get Events
             </button>
             {showSuggestions ? (
                 <ul className="suggestions">
@@ -87,6 +126,7 @@ const CitySearch = ({ allLocations, setCurrentCity, setInfoAlert }) => {
                     </li>
                 </ul>
             ) : null}
+            {localInfoAlert && <div className="error-message info-message">{localInfoAlert}</div>}
         </div>
     );
 };

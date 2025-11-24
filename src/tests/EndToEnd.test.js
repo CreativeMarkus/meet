@@ -107,7 +107,37 @@ describe('End-to-End Tests', () => {
     });
 
     describe('Filter Events by City', () => {
-        test('user can search and filter events by city', async () => {
+        test('user can search and filter events by city using search button', async () => {
+            if (!serverAvailable) {
+                console.log('Skipping test - server not available');
+                return;
+            }
+
+            await page.reload({ waitUntil: 'networkidle0' });
+            await page.waitForSelector('#event-list .event');
+
+            // Type in city search input
+            await page.waitForSelector('#city-search input');
+            await page.click('#city-search input');
+            await page.type('#city-search input', 'Berlin, Germany');
+
+            // Click the Get Events button
+            await page.waitForSelector('.search-button');
+            await page.click('.search-button');
+
+            // Wait for filtered events to load
+            await page.waitForSelector('#event-list .event');
+            const locations = await page.$$eval('#event-list .event .location', els => els.map(e => e.textContent.trim()));
+            expect(locations.length).toBeGreaterThan(0);
+            expect(locations.every(loc => loc === 'Berlin, Germany')).toBe(true);
+        }, 20000);
+
+        test('user can still select city from suggestions dropdown', async () => {
+            if (!serverAvailable) {
+                console.log('Skipping test - server not available');
+                return;
+            }
+
             await page.reload({ waitUntil: 'networkidle0' });
             await page.waitForSelector('#event-list .event');
 

@@ -22,17 +22,35 @@ class Alert extends Component {
         };
     };
 
+    getInlineStyle = () => {
+        return {
+            color: this.color,
+            backgroundColor: 'transparent',
+            border: 'none',
+            fontSize: '14px',
+            margin: '0',
+            padding: '0',
+            borderRadius: '0',
+            textAlign: 'left',
+            display: 'block',
+            width: '100%',
+            boxSizing: 'border-box'
+        };
+    };
+
     render() {
+        const style = this.props.inline ? this.getInlineStyle() : this.getStyle();
         return (
-            <div className="Alert">
-                <p style={this.getStyle()}>{this.props.text}</p>
+            <div className={`Alert ${this.props.inline ? 'inline-alert' : ''}`}>
+                <p style={style}>{this.props.text}</p>
             </div>
         );
     }
 }
 
 Alert.propTypes = {
-    text: PropTypes.string
+    text: PropTypes.string,
+    inline: PropTypes.bool
 };
 
 // InfoAlert subclass
@@ -48,8 +66,8 @@ class InfoAlert extends Alert {
 class ErrorAlert extends Alert {
     constructor(props) {
         super(props);
-        this.color = 'red';
-        this.bgColor = 'rgb(255, 220, 220)'; // light red
+        this.color = '#d32f2f'; // darker red
+        this.bgColor = '#ffebee'; // very light red
     }
 }
 

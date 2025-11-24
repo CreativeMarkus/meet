@@ -72,6 +72,7 @@ defineFeature(feature, test => {
             CitySearchDOM = AppDOM.querySelector('#city-search');
             citySearchInput = screen.getByPlaceholderText('Search for a city');
             await screen.findAllByRole('listitem');
+            await user.click(citySearchInput);
             await user.type(citySearchInput, 'Berlin');
         });
 
@@ -92,6 +93,37 @@ defineFeature(feature, test => {
         });
 
         and('the user should receive a list of upcoming events in that city', async () => {
+            const EventListDOM = AppDOM.querySelector('#event-list');
+            const EventListItems = await within(EventListDOM).findAllByRole('listitem');
+            const allEvents = await getEvents();
+            const berlinEvents = allEvents.filter(event => event.location === 'Berlin, Germany');
+            expect(EventListItems.length).toBe(berlinEvents.length);
+        });
+    });
+
+    test('User can search for events using the Get Events button.', ({ given, when, then }) => {
+        let AppComponent;
+        let AppDOM;
+        let CitySearchDOM;
+        let citySearchInput;
+        let searchButton;
+
+        given('the main page is open', async () => {
+            AppComponent = render(<App />);
+            AppDOM = AppComponent.container.firstChild;
+            CitySearchDOM = AppDOM.querySelector('#city-search');
+            citySearchInput = screen.getByPlaceholderText('Search for a city');
+            searchButton = within(CitySearchDOM).getByRole('button', { name: /get events/i });
+            await screen.findAllByRole('listitem');
+        });
+
+        when('user types a city name and clicks the Get Events button', async () => {
+            const user = userEvent.setup();
+            await user.type(citySearchInput, 'Berlin, Germany');
+            await user.click(searchButton);
+        });
+
+        then('the user should receive a list of upcoming events in that city', async () => {
             const EventListDOM = AppDOM.querySelector('#event-list');
             const EventListItems = await within(EventListDOM).findAllByRole('listitem');
             const allEvents = await getEvents();

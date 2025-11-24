@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 
 const NumberOfEvents = ({ setCurrentNOE, setErrorAlert, defaultNumber = 32 }) => {
     const [number, setNumber] = useState(defaultNumber);
+    const [localError, setLocalError] = useState('');
 
     const handleInputChanged = (e) => {
         const val = e.target.value;
         const num = val === '' ? '' : Number(val);
 
         // Validation logic for error alerts
+        const errorMsg = val !== '' && (isNaN(num) || num <= 0) ? 'Please enter a valid number greater than zero' : '';
+
+        setLocalError(errorMsg);
         if (setErrorAlert) {
-            if (val !== '' && (isNaN(num) || num <= 0)) {
-                setErrorAlert('Please enter a valid number greater than zero');
-            } else {
-                setErrorAlert('');
-            }
+            setErrorAlert(errorMsg);
         }
 
         setNumber(num);
@@ -33,6 +33,7 @@ const NumberOfEvents = ({ setCurrentNOE, setErrorAlert, defaultNumber = 32 }) =>
                 value={number}
                 onChange={handleInputChanged}
             />
+            {localError && <div className="error-message">{localError}</div>}
         </div>
     );
 };

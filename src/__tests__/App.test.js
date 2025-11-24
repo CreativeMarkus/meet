@@ -42,10 +42,10 @@ describe('<App /> integration', () => {
 
         const CitySearchDOM = AppDOM.querySelector('#city-search');
         const CitySearchInput = within(CitySearchDOM).queryByRole('textbox');
+        const searchButton = within(CitySearchDOM).getByRole('button', { name: /search for events in this city/i });
 
-        await user.type(CitySearchInput, 'Berlin');
-        const berlinSuggestionItem = await within(CitySearchDOM).findByText('Berlin, Germany');
-        await user.click(berlinSuggestionItem);
+        await user.type(CitySearchInput, 'Berlin, Germany');
+        await user.click(searchButton);
 
         const allRenderedEventItems = await screen.findAllByRole('listitem');
 

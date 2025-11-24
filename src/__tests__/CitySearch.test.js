@@ -50,10 +50,9 @@ describe('<CitySearch /> component', () => {
         const allLocations = extractLocations(allEvents);
         CitySearchComponent.rerender(<CitySearch allLocations={allLocations} setCurrentCity={() => { }} setInfoAlert={() => { }} />);
 
-
         const cityTextBox = CitySearchComponent.queryByRole('textbox');
+        await user.click(cityTextBox);
         await user.type(cityTextBox, "Berlin");
-
 
         const suggestions = allLocations
             ? allLocations.filter((location) => {
@@ -63,12 +62,48 @@ describe('<CitySearch /> component', () => {
             })
             : [];
 
-
         const suggestionListItems = CitySearchComponent.queryAllByRole('listitem');
         expect(suggestionListItems).toHaveLength(suggestions.length + 1);
         for (let i = 0; i < suggestions.length; i += 1) {
             expect(suggestionListItems[i].textContent).toBe(suggestions[i]);
         }
+    });
+
+    test('renders "Get Events" search button', () => {
+        const searchButton = CitySearchComponent.getByRole('button', { name: /search for events in this city/i });
+        expect(searchButton).toBeInTheDocument();
+    });
+
+    test('triggers city change when search button is clicked with valid city', async () => {
+        const user = userEvent.setup();
+        const mockSetCurrentCity = jest.fn();
+        const allEvents = await getEvents();
+        const allLocations = extractLocations(allEvents);
+        CitySearchComponent.rerender(<CitySearch allLocations={allLocations} setCurrentCity={mockSetCurrentCity} setInfoAlert={() => { }} />);
+
+        const cityTextBox = CitySearchComponent.queryByRole('textbox');
+        const searchButton = CitySearchComponent.getByRole('button', { name: /search for events in this city/i });
+
+        await user.type(cityTextBox, 'Berlin, Germany');
+        await user.click(searchButton);
+
+        expect(mockSetCurrentCity).toHaveBeenCalledWith('Berlin, Germany');
+    });
+
+    test('shows error when search button is clicked with invalid city', async () => {
+        const user = userEvent.setup();
+        const mockSetInfoAlert = jest.fn();
+        const allEvents = await getEvents();
+        const allLocations = extractLocations(allEvents);
+        CitySearchComponent.rerender(<CitySearch allLocations={allLocations} setCurrentCity={() => { }} setInfoAlert={mockSetInfoAlert} />);
+
+        const cityTextBox = CitySearchComponent.queryByRole('textbox');
+        const searchButton = CitySearchComponent.getByRole('button', { name: /search for events in this city/i });
+
+        await user.type(cityTextBox, 'Invalid City');
+        await user.click(searchButton);
+
+        expect(mockSetInfoAlert).toHaveBeenCalledWith('We cannot find the city you are looking for. Please try another city');
     });
 });
 
