@@ -101,7 +101,7 @@ defineFeature(feature, test => {
         });
     });
 
-    test('User can search for events using the Get Events button.', ({ given, when, then }) => {
+    test('User can search for events using the Get Events button..', ({ given, when, then }) => {
         let AppComponent;
         let AppDOM;
         let CitySearchDOM;
@@ -113,11 +113,11 @@ defineFeature(feature, test => {
             AppDOM = AppComponent.container.firstChild;
             CitySearchDOM = AppDOM.querySelector('#city-search');
             citySearchInput = screen.getByPlaceholderText('Search for a city');
-            searchButton = within(CitySearchDOM).getByRole('button', { name: /get events/i });
+            searchButton = within(CitySearchDOM).getByRole('button', { name: /search for events in this city/i });
             await screen.findAllByRole('listitem');
         });
 
-        when('user types a city name and clicks the Get Events button', async () => {
+        when(/^user enters a city in the textbox and clicks the "(.*)" button$/, async () => {
             const user = userEvent.setup();
             await user.type(citySearchInput, 'Berlin, Germany');
             await user.click(searchButton);

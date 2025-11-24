@@ -4,7 +4,7 @@ import EventList from './components/EventList';
 import NumberOfEvents from './components/NumberOfEvents';
 import CityEventsChart from './components/CityEventsChart';
 import EventGenresChart from './components/EventGenresChart';
-import { InfoAlert, ErrorAlert, WarningAlert } from './components/Alert';
+import { InfoAlert, WarningAlert } from './components/Alert';
 import { extractLocations } from './api';
 import mockData from './mock-data';
 
@@ -17,9 +17,9 @@ const App = () => {
   const [allLocations, setAllLocations] = useState([]);
   const [currentCity, setCurrentCity] = useState('See all cities');
   const [isLoading, setIsLoading] = useState(true);
-  const [infoAlert, setInfoAlert] = useState('');
-  const [errorAlert, setErrorAlert] = useState('');
-  const [warningAlert, setWarningAlert] = useState('');
+  const [infoAlert, setInfoAlert] = useState("");
+  const [errorAlert, setErrorAlert] = useState("");
+  const [warningAlert, setWarningAlert] = useState("");
 
   useEffect(() => {
     if (navigator.onLine) {
@@ -79,7 +79,7 @@ const App = () => {
     return () => {
       isMounted = false;
     };
-  }, [currentNOE]);
+  }, [currentNOE, currentCity]);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (event) => {

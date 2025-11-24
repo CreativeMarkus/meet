@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import React from 'react';
-import { render, within, screen, cleanup } from '@testing-library/react';
+import { render, within, screen, cleanup, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getEvents } from '../api';
 import App from './../App';
@@ -46,6 +46,14 @@ describe('<App /> integration', () => {
 
         await user.type(CitySearchInput, 'Berlin, Germany');
         await user.click(searchButton);
+
+        // Wait for the filtering to complete
+        await waitFor(async () => {
+            const renderedEventItems = await screen.findAllByRole('listitem');
+            const allEvents = await getEvents();
+            const berlinEvents = allEvents.filter(event => event.location === 'Berlin, Germany');
+            expect(renderedEventItems.length).toBe(berlinEvents.length);
+        });
 
         const allRenderedEventItems = await screen.findAllByRole('listitem');
 
